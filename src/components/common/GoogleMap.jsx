@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Map, Marker } from "@vis.gl/react-google-maps";
+import React, { useEffect,useState } from "react";
+
 import {
   Autocomplete,
   GoogleMap,
@@ -11,11 +11,6 @@ import InputField from "./InputField";
 import { Button, TextInput } from "flowbite-react";
 import { Search } from "flowbite-react-icons/outline";
 import { locationMarker } from "../../assets/index";
-import FileUploade from "./FileUpload";
-import { usePhotoGallery } from "../../hooks/usePhotoGallery";
-
-import Input from "postcss/lib/input";
-import html2canvas from "html2canvas";
 import ErrorMssgField from "./ErrorMssgField";
 import { useSelector } from "react-redux";
 
@@ -24,9 +19,11 @@ const isValidLatLng = (value, min, max) => {
   return !isNaN(num) && num >= min && num <= max;
 };
 
-const Location = ({ location, setLocation, setFieldValue, errors,loading }) => {
-  const data = useSelector((state) => state.proposalDetails);
+const libraries = ["places", "drawing"]; 
 
+const LocationMap = ({ location, setLocation, setFieldValue, errors,loading }) => {
+  const data = useSelector((state) => state.proposalDetails);
+  
   // -----------------------------------------------------------------------------//
 
   const [markerLocation, setMarkerLocation] = useState({
@@ -91,7 +88,10 @@ const Location = ({ location, setLocation, setFieldValue, errors,loading }) => {
   useEffect(() => {
     if (location?.lat === 48.856614 && location?.lng === 2.3522219) return;
     setFieldValue("gps_tracker", [ location.lat, location.lng ]);
-  }, [location]);
+  }, [location,setFieldValue]);
+
+
+
 
   return (
     <div className="justify-evenly space-y-5">
@@ -185,4 +185,4 @@ const Location = ({ location, setLocation, setFieldValue, errors,loading }) => {
   );
 };
 
-export default Location;
+export default LocationMap;

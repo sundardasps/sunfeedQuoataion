@@ -11,6 +11,8 @@ import { numberValidation } from '../../utils/onlyNumbervalidation'
 import { contactInformationSchema } from '../../yup/step1'
 import { useDispatch, useSelector } from 'react-redux'
 import { contact_informationUpdate } from '../../redux/slice'
+import { useJsApiLoader } from '@react-google-maps/api'
+
 
 function Step1() {
     const navigate = useNavigate()
@@ -26,7 +28,14 @@ function Step1() {
         navigate(`/step2`);
       },
     });
-    
+
+    const { isLoaded } = useJsApiLoader({
+      id: "google-map-script",
+      googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+      libraries: ["places", "drawing"],
+    });
+  
+
   return (
     <form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-4 w-full rounded-md border-2 p-5 space-y-2 bg-[#F8F8F8] border-[#65AC32]">
       <FormTitle label="Contact information" />

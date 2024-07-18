@@ -1,4 +1,4 @@
-import Location from "../common/GoogleMap";
+
 import FormTitle from "../common/FormTitle";
 import InputLabel from "../common/InputLabel";
 import InputField from "../common/InputField";
@@ -9,20 +9,18 @@ import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { numberValidation } from "../../utils/onlyNumbervalidation";
 import { construction_site, constructionSiteSchema } from "../../yup/step3";
-import { construction_siteUpdate } from "../../redux/slice";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
-import html2canvas from "html2canvas";
-import { useState } from "react";
-import { uploadToPresignedUrl } from "../../api";
+import {  useEffect, useState } from "react";
 import { addNewSite } from "../../utils/addNewSite";
 import {
   allowedIMGFileTypes,
   allowedVideoFileTypes,
 } from "../../utils/constents";
 import { Toaster } from "react-hot-toast";
+import LocationMap from "../common/GoogleMap";
 
 function Step3() {
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -60,6 +58,8 @@ function Step3() {
       }
     },
   });
+
+
 
   return (
     <div className="w-full  p-5 bg-[#F8F8F8] rounded-md border-2 border-[#65AC32]  md:mx-5">
@@ -204,13 +204,13 @@ function Step3() {
         </div>
         <div className="w-full md:w-2/4 mt-5">
           <FormTitle label="Location Information" />
-          <Location
-            location={location}
-            setLocation={setLocation}
-            setFieldValue={setFieldValue}
-            errors={errors}
-            loading={loading}
-          />
+        <LocationMap
+          location={location}
+          setLocation={setLocation}
+          setFieldValue={setFieldValue}
+          errors={errors}
+          loading={loading}
+        />
           <div className="my-5">
             <div className="mb-2 block">
               <InputLabel label="Site Video" />
