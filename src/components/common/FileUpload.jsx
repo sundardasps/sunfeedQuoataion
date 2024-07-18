@@ -1,21 +1,54 @@
 import { useRef, useState } from "react";
-import { upload } from "../../assets";
+import { logo, upload } from "../../assets";
+import toast, { Toaster } from "react-hot-toast";
 
-
-
-
-function FileUploade({name,setFieldValue}) {
-  const [file, setFile] = useState();
+function FileUploade({
+  field,
+  setFile,
+  storedFile,
+  allowedFileTypes,
+  setFieldValue,
+  alertType,
+  disabled
+}) {
   const [isDragging, setDraging] = useState(null);
   const onSelectRef = useRef(null);
 
-
-
   const handleSelectFile = (event) => {
-    const file = event.target.files[0];
-    if (file.length === 0) return;
-    setFile({ name: file.name, url: URL.createObjectURL(file) });
-    setFieldValue("file", file);
+    const selectedFiles = event.target.files;
+    let totalFileSize = 0;
+
+    if (!selectedFiles) return;
+    Array.from(selectedFiles).forEach((file) => {
+      const fileSizeInMb = file.size / (1024 * 1024);
+      if (totalFileSize + fileSizeInMb > 30) {
+        toast.error(
+          `Adding file '${file.name}' exceeds the total size limit of 30 MB. Please select fewer files.`
+        );
+        return;
+      }
+      if (!allowedFileTypes.includes(file.type)) {
+        toast.error(
+          `File type '${file.type}' is not allowed. Please select a valid ${alertType}  file.`
+        );
+        return;
+      }
+
+      if (storedFile.some((storedFile) => storedFile.name === file.name)) {
+        toast.error(
+          `File '${file.name}' is already added. Please select a different file.`
+        );
+        return;
+      }
+
+      totalFileSize += fileSizeInMb;
+      console.log(totalFileSize);
+      setFile((prevFiles) => {
+        const updatedFiles = [...prevFiles, file];
+        setFieldValue(field, updatedFiles);
+        return updatedFiles;
+      });
+    });
   };
 
   const handle = () => {
@@ -36,15 +69,44 @@ function FileUploade({name,setFieldValue}) {
   const onDrop = (event) => {
     event.preventDefault();
     setDraging(false);
-    setFile();
-    const file = event.dataTransfer.files[0];
-    console.log(file);
-    setFile({ name: file.name, url: URL.createObjectURL(file) });
-    setFieldValue("file", file);
+    const selectedFile = event.dataTransfer.files[0];
+
+    let totalFileSize = 0;
+
+    if (!selectedFile) return;
+
+    const fileSizeInMb = selectedFile.size / (1024 * 1024);
+    if (totalFileSize + fileSizeInMb > 30) {
+      toast.error(
+        `Adding file '${selectedFile.name}' exceeds the total size limit of 30 MB. Please select fewer files.`
+      );
+      return;
+    }
+    if (!allowedFileTypes.includes(selectedFile.type)) {
+      toast.error(
+        `File type '${selectedFile.type}' is not allowed. Please select a valid image file.`
+      );
+      return;
+    }
+    if (
+      storedFile.some((storedFile) => storedFile.name === selectedFile.name)
+    ) {
+      toast.error(
+        `File '${file.name}' is already added. Please select a different file.`
+      );
+      return;
+    }
+
+    totalFileSize += fileSizeInMb;
+    setFile((prevFiles) => {
+      const updatedFiles = [...prevFiles, selectedFile];
+      setFieldValue(field, updatedFiles);
+      return updatedFiles;
+    });
   };
 
   return (
-      <>
+    <>
       <div
         onDragOver={onDragOver}
         onDragLeave={onDragleave}
@@ -72,21 +134,26 @@ function FileUploade({name,setFieldValue}) {
           </p>
           <input
             type="file"
+            multiple
             className="hidden"
             name={name}
             ref={onSelectRef}
             onSelect={handleSelectFile}
             onChange={handleSelectFile}
+            disabled={disabled}
           />
         </div>
       </div>
-      {file && (
+      {storedFile && (
         <p className="text-center ">
-          file: &nbsp; <span>{file.name}</span>
+          file: &nbsp;{" "}
+          <span className="text-xs font-bold">
+            {storedFile.map((file) => file.name)}
+          </span>
         </p>
       )}
-     </>
-
+      <Toaster position="top-right" reverseOrder={false} />
+    </>
   );
 }
 

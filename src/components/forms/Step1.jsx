@@ -1,31 +1,32 @@
-import React from 'react'
+
+import FormTitle from '../common/FormTitle'
 import InputField from '../common/InputField'
 import InputLabel from '../common/InputLabel'
+import ErrorMssgField from '../common/ErrorMssgField'
 import { Button } from 'flowbite-react'
+import { useFormik } from 'formik'
 import { ArrowRight } from 'flowbite-react-icons/outline'
 import { useNavigate } from 'react-router-dom'
-import FormTitle from '../common/FormTitle'
-import { useFormik } from 'formik'
-import { contact_information, contactInformationSchema } from '../../yup/step1'
-import ErrorMssgField from '../common/ErrorMssgField'
-import { useDispatch } from 'react-redux'
+import { numberValidation } from '../../utils/onlyNumbervalidation'
+import { contactInformationSchema } from '../../yup/step1'
+import { useDispatch, useSelector } from 'react-redux'
 import { contact_informationUpdate } from '../../redux/slice'
 
 function Step1() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const data = useSelector((state) => state.proposalDetails);
 
     const { errors, handleBlur, handleChange, values, touched, handleSubmit } =
     useFormik({
-      initialValues:contact_information ,
+      initialValues:data.invoice.contact_information ,
       validationSchema: contactInformationSchema,
       onSubmit: async (values) => { 
-        alert()
         dispatch(contact_informationUpdate(values));
         navigate(`/step2`);
       },
     });
-
+    
   return (
     <form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-4 w-full rounded-md border-2 p-5 space-y-2 bg-[#F8F8F8] border-[#65AC32]">
       <FormTitle label="Contact information" />
@@ -51,9 +52,9 @@ function Step1() {
           <div className="mb-2 block">
             <InputLabel label="Address " />
           </div>
-          <InputField value={values.address} name="address" onBlur={handleBlur} onChange={handleChange}  />
-          {errors.address && touched.address && (
-            <ErrorMssgField errorMessage={errors.address} />
+          <InputField value={values.address_headquarters} name="address_headquarters" onBlur={handleBlur} onChange={handleChange}  />
+          {errors.address_headquarters && touched.address_headquarters && (
+            <ErrorMssgField errorMessage={errors.address_headquarters} />
           )}
         </div>
       <div>
@@ -87,7 +88,7 @@ function Step1() {
           <div className="mb-2 block">
             <InputLabel label="Postal Code" />
           </div>
-          <InputField value={values.postal_code} name="postal_code" onBlur={handleBlur} onChange={handleChange}  />
+          <InputField value={values.postal_code} name="postal_code" onBlur={handleBlur} onChange={(e)=>numberValidation(e,handleChange)}  />
           {errors.postal_code && touched.postal_code && (
             <ErrorMssgField errorMessage={errors.postal_code} />
           )}
@@ -96,7 +97,7 @@ function Step1() {
           <div className="mb-2 block">
             <InputLabel label="Phone Number (Office)" />
           </div>
-          <InputField value={values.phone_number_office} name="phone_number_office" onBlur={handleBlur} onChange={handleChange}  />
+          <InputField value={values.phone_number_office} name="phone_number_office" onBlur={handleBlur} onChange={(e)=>numberValidation(e,handleChange)}   />
           {errors.phone_number_office && touched.phone_number_office && (
             <ErrorMssgField errorMessage={errors.phone_number_office} />
           )}
@@ -105,7 +106,7 @@ function Step1() {
           <div className="mb-2 block">
             <InputLabel label="Phone Number (Mobile)" />
           </div>
-          <InputField value={values.phone_number_mobile} name="phone_number_mobile" onBlur={handleBlur} onChange={handleChange}  />
+          <InputField value={values.phone_number_mobile} name="phone_number_mobile" onBlur={handleBlur} onChange={(e)=>numberValidation(e,handleChange)}   />
           {errors.phone_number_mobile && touched.phone_number_mobile && (
             <ErrorMssgField errorMessage={errors.phone_number_mobile} />
           )}

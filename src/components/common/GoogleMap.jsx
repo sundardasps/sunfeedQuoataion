@@ -1,26 +1,67 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Map, Marker } from "@vis.gl/react-google-maps";
-import FormTitle from "./FormTitle";
+import {
+  Autocomplete,
+  GoogleMap,
+  MarkerF,
+  useJsApiLoader,
+} from "@react-google-maps/api";
 import InputLabel from "./InputLabel";
 import InputField from "./InputField";
-import { Button } from "flowbite-react";
+import { Button, TextInput } from "flowbite-react";
 import { Search } from "flowbite-react-icons/outline";
 import { locationMarker } from "../../assets/index";
 import FileUploade from "./FileUpload";
 import { usePhotoGallery } from "../../hooks/usePhotoGallery";
-import Camera from "./Camera";
+
+import Input from "postcss/lib/input";
+import html2canvas from "html2canvas";
+import ErrorMssgField from "./ErrorMssgField";
+import { useSelector } from "react-redux";
 
 const isValidLatLng = (value, min, max) => {
   const num = parseFloat(value);
   return !isNaN(num) && num >= min && num <= max;
 };
 
-const GoogleMap = () => {
+const Location = ({ location, setLocation, setFieldValue, errors }) => {
+  const data = useSelector((state) => state.proposalDetails);
+
+  // -----------------------------------------------------------------------------//
+
   const [markerLocation, setMarkerLocation] = useState({
     lat: 51.509865,
     lng: -0.118092,
   });
+  const [currentLocation, setCurrentLocation] = useState({
+    lat: 48.856614,
+    lng: 2.3522219,
+  });
 
+  const [mapResult, setMapResult] = useState(null);
+  const [map, setMap] = useState(null);
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries: ["places", "drawing"],
+  });
+
+  const onPlaceChanged = () => {
+    if (Object.keys(mapResult?.getPlace()).length === 1) return;
+    const place = mapResult?.getPlace();
+    const latitude = place?.geometry?.location?.lat();
+    const longitude = place?.geometry?.location?.lng();
+    console.log("Latitude", latitude);
+    console.log("Longitude", longitude);
+
+    setLocation({
+      lat: latitude,
+      lng: longitude,
+    });
+  };
+
+  //-----------------------------------------------------------------------------//
   const handleLatChange = (e) => {
     const lat = e.target.value;
     if (isValidLatLng(lat, -90, 90)) {
@@ -35,60 +76,112 @@ const GoogleMap = () => {
     }
   };
 
-  const { takePhoto } = usePhotoGallery();
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+      setLocation({
+        lat: latitude,
+        lng: longitude,
+      });
+    });
+  }, [data, setLocation]);
 
-  const take = () => {
-    takePhoto();
-  };
+  useEffect(() => {
+    if (location?.lat === 48.856614 && location?.lng === 2.3522219) return;
+    setFieldValue("gps_tracker", [ location.lat, location.lng ]);
+  }, [location]);
 
   return (
     <div className="justify-evenly space-y-5">
-      <div className="w-full md:flex justify-between items-end">
-        <div className="mb-2 md:mb-0 md:w-2/3">
-          <div className="mb-2 block">
-            <InputLabel label="Phone Number (Mobile)" />
+    {isLoaded ? (
+      <>
+        <div className="w-full md:flex justify-between items-end">
+          <div className="mb-2 md:mb-0 md:w-2/3">
+            <div className="mb-2 block">
+              <InputLabel label="Enter the address" />
+            </div>
+  
+            <Autocomplete
+              onPlaceChanged={onPlaceChanged}
+              onLoad={(val) => {
+                setMapResult(val);
+              }}
+              className="w-full"
+            >
+              <TextInput />
+            </Autocomplete>
           </div>
-          <InputField />
+          <Button
+            onClick={() => {
+              setLocation(currentLocation);
+              map?.panTo(currentLocation);
+            }}
+            className="bg-[#65AC32] w-full md:w-auto"
+          >
+            <Search /> Get Location
+          </Button>
         </div>
-        <Button className="bg-[#65AC32] w-full md:w-auto" type="submit">
-          <Search /> Get Location
-        </Button>
-      </div>
-      <div className="md:flex gap-4 justify-between items-end">
-        <div className="md:w-2/3">
-          <div className="flex justify-start items-start gap-1">
-            <img src={locationMarker} alt="icon" />
-            <InputLabel label="Latitude" />
+        <div className="md:flex gap-4 justify-between items-end">
+          <div className="md:w-2/3">
+            <div className="flex justify-start items-start gap-1">
+              <img src={locationMarker} alt="icon" />
+              <InputLabel label="Latitude" />
+            </div>
+            <InputField value={location?.lat} onChange={handleLatChange} />
           </div>
-          <InputField
-            value={markerLocation.lat}
-            onChange={handleLatChange}
-          />
-        </div>
-        <div className="md:w-2/3">
-          <div className="flex justify-start items-start gap-1">
-            <img src={locationMarker} alt="icon" />
-            <InputLabel label="Longitude" />
+          <div className="md:w-2/3">
+            <div className="flex justify-start items-start gap-1">
+              <img src={locationMarker} alt="icon" />
+              <InputLabel label="Longitude" />
+            </div>
+            <InputField value={location?.lng} onChange={handleLngChange} />
           </div>
-          <InputField
-            value={markerLocation.lng}
-            onChange={handleLngChange}
-          />
         </div>
-      </div>
-      <div className="h-[300px] w-full rounded-md border">
-        <Map
-          style={{ borderRadius: "20px" }}
-          defaultZoom={13}
-          center={markerLocation}
-          gestureHandling={"greedy"}
-          mapTypeControl
-        >
-          <Marker position={markerLocation} />
-        </Map>
-      </div>
-    </div>
+        {errors?.gps_tracker && (
+          <ErrorMssgField errorMessage={errors?.gps_tracker} />
+        )}
+        <div className="h-[300px] w-full rounded-md">
+          <div
+            id="print"
+            className="flex flex-1 flex-col h-[60%] md:h-full w-full"
+          >
+            
+            <GoogleMap
+              mapContainerStyle={{ width: "100%", height: "100%" }}
+              center={location}
+              zoom={20}
+              onClick={(e) => {
+                setLocation({
+                  lat: e.latLng.lat(),
+                  lng: e.latLng.lng(),
+                });
+              }}
+              options={{
+                zoomControl: false,
+                fullscreenControl: false,
+                keyboardShortcuts: false,
+                mapTypeControl: false,
+                streetViewControl: true,
+                mapTypeId: "hybrid",
+              }}
+              onLoad={(map) => {
+                setMap(map);
+              }}
+            >
+              <MarkerF position={location} />
+            </GoogleMap>
+          </div>
+          <p className="text-sm font-bold ">(Please select your area with read mark.)</p>
+        </div>
+      </>
+    ) : (
+      <p>LOADING.....</p>
+    )}
+  </div>
+  
   );
 };
 
-export default GoogleMap;
+export default Location;

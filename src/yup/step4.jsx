@@ -5,9 +5,9 @@ const  product_information = {
     solar_panel: "",
     fixation_type: "",
     cable: "",
-    cable_length: "",
+    // cable_length: "",
     electrical_board: "",
-    option: "",
+    // option: "",
     ground_opening_size: "",
     earthworks: "",
     driver_transformer: "",
@@ -16,9 +16,9 @@ const  product_information = {
     construction_permit_fees: "",
     engine_rental: "",
     dumpster: "",
-    complete_kit: "",
-    complete_warehouse: "",
-    carport: "",
+    // complete_kit: "",
+    // complete_warehouse: "",
+    // carport: "",
     workforce: "",
   }
 
@@ -67,10 +67,10 @@ const  product_information = {
     technical_studies: Yup.string()
       .required("This field is required")
       .trim(),
-    // construction_permit_fees: Yup.number()
-    //   .required("This field is required")
-    //   .typeError("Construction permit fees must be a number")
-    //   .positive("Construction permit fees must be a positive number"),
+    construction_permit_fees: Yup.number()
+      .required("This field is required")
+      .typeError("Construction permit fees must be a number")
+      .positive("Construction permit fees must be a positive number"),
     engine_rental: Yup.number()
       .required("This field is required")
       .typeError("Engine rental must be a number")

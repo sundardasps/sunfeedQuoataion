@@ -1,8 +1,8 @@
-import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import proposalSlice from "./slice";
+import { persistReducer } from "redux-persist";
 import { persistStore } from "redux-persist";
 import { configureStore } from "@reduxjs/toolkit";
-import proposalSlice from "./slice"; 
 
 const persistConfig = {
   key: "root",
@@ -10,7 +10,6 @@ const persistConfig = {
 };
 
 const formPersistedReducer = persistReducer(persistConfig, proposalSlice);
-
 
 const store = configureStore({
   reducer: {

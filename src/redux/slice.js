@@ -5,16 +5,14 @@ const initialState = {
     contact_information: {
       company_name: "",
       customer_name: "",
-      address_headquarters: "",
       city: "",
       postal_code: "",
       country: "",
-      company_vat_number: "",
       phone_number_office: "",
       phone_number_mobile: "",
       email: "",
     },
-    company_information :{
+    company_information: {
       company_name: "",
       address_headquarters: "",
       city: "",
@@ -25,39 +23,45 @@ const initialState = {
       phone_number_mobile: "",
       iban_number: "",
       email: "",
-        },
-        construction_site : {
-          name_of_site: "",
-          address: "",
-          postal_code: "",
-          country: "",
-          sitedirector_contact: "",
-          sitedirector_email: "",
-          phone_office: "",
-          phone_mobile: "",
-          gps_tracker: [],
-        },
-    // construction_site: [
-    //   {
-    //     name: "",
-    //     address: "",
-    //     postal_code: "",
-    //     country: "",
-    //     sitedirector_contact: "",
-    //     sitedirector_email: "",
-    //     phone_office: "",
-    //     phone_mobile: "",
-    //     gps_tracker: [],
-    //   },
-    // ],
+      annual_number_report: [],
+      recto_and_verse_link: [],
+      construction_permit: [],
+      electricity_bill: [],
+    },
+    // construction_site: {
+    //   name_of_site: "",
+    //   address: "",
+    //   postal_code: "",
+    //   country: "",
+    //   // sitedirector_contact: "",
+    //   sitedirector_email: "",
+    //   phone_office: "",
+    //   phone_mobile: "",
+    //   gps_tracker: [],
+    // },
+    construction_site: [
+      {
+        name_of_site: "",
+        address: "",
+        postal_code: "",
+        country: "",
+        sitedirector_contact: "",
+        sitedirector_email: "",
+        phone_office: "",
+        phone_mobile: "",
+        gps_tracker: [],
+        site_pictures: [],
+        videos: [],
+      },
+    ],
     product_information: {
       inverters: "",
       solar_panel: "",
       fixation_type: "",
       cable: "",
-      cable_length: "",
+      // cable_length: "",
       electrical_board: "",
-      option: "",
+      // option: "",
       ground_opening_size: "",
       earthworks: "",
       driver_transformer: "",
@@ -66,25 +70,23 @@ const initialState = {
       construction_permit_fees: "",
       engine_rental: "",
       dumpster: "",
-      complete_kit: "",
-      complete_warehouse: "",
-      carport: "",
+      // complete_kit: "",
+      // complete_warehouse: "",
+      // carport: "",
       workforce: "",
     },
-    // financial_statement: {
-    //   deposit: "",
-    //   down_payment: "",
-    // },
     financial_statement: {
       deposit: "",
       down_payment: "",
       monthly_payment: "",
       total_payment: "",
+      interest:"",
+      number_of_months:""
     },
   },
   uuids: {
     administration_files: [],
-    sky_picture: "",
+    sky_picture: [],
     site_pictures: [],
     videos: [],
   },
@@ -95,33 +97,73 @@ const proposalSlice = createSlice({
   initialState,
   reducers: {
     contact_informationUpdate: (state, action) => {
-      const data = action.payload;
-      console.log(data);
-      state.invoice.contact_information = data
+      state.invoice.contact_information = {
+        ...state.invoice.contact_information,
+        ...action.payload,
+      };
     },
     company_informationUpdate: (state, action) => {
-      const data = action.payload;
-      state.invoice.company_information = data
+      state.invoice.company_information = {
+        ...state.invoice.company_information,
+        ...action.payload,
+      };
     },
     construction_siteUpdate: (state, action) => {
-      const data = action.payload;
-      state.invoice.construction_site = data
+      const updatedSites = state.invoice.construction_site.map(
+        (site, index) => {
+          const update = action.payload.find((upd) => upd.index === index);
+          return update ? { ...site, ...update } : site;
+        }
+      );
+      const newSites = action.payload.filter(
+        (upd) => upd.index === undefined || upd.index === null
+      );
+      state.invoice.construction_site = [...updatedSites, ...newSites];
     },
+
     product_informationUpdate: (state, action) => {
-      const data = action.payload;
-      state.invoice.product_information = data
+      state.invoice.product_information = {
+        ...state.invoice.product_information,
+        ...action.payload,
+      };
     },
     financial_statementUpdate: (state, action) => {
+      state.invoice.financial_statement = {
+        ...state.invoice.financial_statement,
+        ...action.payload,
+      };
+    },
+    uuidUpdate: (state, action) => {
       const data = action.payload;
-      state.invoice.financial_statement = data
+
+      state.uuids = {
+        ...state.uuids,
+        administration_files: [
+          ...state.uuids.administration_files,
+          ...(data.administration_files || []),
+        ],
+        sky_picture: [...state.uuids.sky_picture, ...(data.sky_picture || [])],
+        site_pictures: [
+          ...state.uuids.site_pictures,
+          ...(data.site_pictures || []),
+        ],
+        videos: [...state.uuids.videos, ...(data.videos || [])],
+      };
     },
     clearForm: () => {
-      return initialState
+      return initialState;
     },
   },
 });
 
-export const {clearForm,construction_siteUpdate, contact_informationUpdate,product_informationUpdate,company_informationUpdate,financial_statementUpdate } =
-  proposalSlice.actions;
+export const {
+  clearForm,
+  construction_siteUpdate,
+  contact_informationUpdate,
+  product_informationUpdate,
+  company_informationUpdate,
+  financial_statementUpdate,
+  uuidUpdate,
+} = proposalSlice.actions;
 
 export default proposalSlice.reducer;

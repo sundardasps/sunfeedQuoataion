@@ -1,0 +1,96 @@
+const monthlyInstallments = [
+  { months: 18, range: "500-2500", value: 6.622 },
+  { months: 18, range: "2501-5000", value: 6.611 },
+  { months: 18, range: "5001-12500", value: 6.589 },
+  { months: 18, range: "12501-25000", value: 6.578 },
+  { months: 18, range: "25001-37500", value: 6.567 },
+  { months: 18, range: "37501-50000", value: 6.556 },
+  { months: 18, range: "50000", value: 6.534 },
+  //---------------------------------------------------
+  { months: 24, range: "500-2500", value: 5.06 },
+  { months: 24, range: "2501-5000", value: 5.049 },
+  { months: 24, range: "5001-12500", value: 5.027 },
+  { months: 24, range: "12501-25000", value: 5.016 },
+  { months: 24, range: "25001-37500", value: 5.005 },
+  { months: 24, range: "37501-50000", value: 4.994 },
+  { months: 24, range: "50000", value: 4.972 },
+  //---------------------------------------------------
+  { months: 30, range: "500-2500", value: 4.103 },
+  { months: 30, range: "2501-5000", value: 4.092 },
+  { months: 30, range: "5001-12500", value: 3.9697 },
+  { months: 30, range: "12501-25000", value: 4.07 },
+  { months: 30, range: "25001-37500", value: 4.059 },
+  { months: 30, range: "37501-50000", value: 4.048 },
+  { months: 30, range: "50000", value: 4.026 },
+  //---------------------------------------------------
+  { months: 36, range: "500-2500", value: 3.487 },
+  { months: 36, range: "2501-5000", value: 3.476 },
+  { months: 36, range: "5001-12500", value: 3.465 },
+  { months: 36, range: "12501-25000", value: 3.454 },
+  { months: 36, range: "25001-37500", value: 3.443 },
+  { months: 36, range: "37501-50000", value: 3.432 },
+  { months: 36, range: "50000", value: 3.41 },
+  //---------------------------------------------------
+  { months: 42, range: "500-2500", value: 3.047 },
+  { months: 42, range: "2501-5000", value: 3.036 },
+  { months: 42, range: "5001-12500", value: 3.014 },
+  { months: 42, range: "12501-25000", value: 3.003 },
+  { months: 42, range: "25001-37500", value: 2.992 },
+  { months: 42, range: "37501-50000", value: 2.981 },
+  { months: 42, range: "50000", value: 2.959 },
+  //---------------------------------------------------
+  { months: 48, range: "500-2500", value: 2.717 },
+  { months: 48, range: "2501-5000", value: 2.706 },
+  { months: 48, range: "5001-12500", value: 2.684 },
+  { months: 48, range: "12501-25000", value: 2.673 },
+  { months: 48, range: "25001-37500", value: 2.662 },
+  { months: 48, range: "37501-50000", value: 2.64 },
+  { months: 48, range: "50000", value: 2.618 },
+  //---------------------------------------------------
+  { months: 54, range: "500-2500", value: 2.453 },
+  { months: 54, range: "2501-5000", value: 2.442 },
+  { months: 54, range: "5001-12500", value: 2.42 },
+  { months: 54, range: "12501-25000", value: 2.409 },
+  { months: 54, range: "25001-37500", value: 2.398 },
+  { months: 54, range: "37501-50000", value: 2.387 },
+  { months: 54, range: "50000", value: 2.365 },
+  //---------------------------------------------------
+  { months: 60, range: "500-2500", value: 2.255 },
+  { months: 60, range: "2501-5000", value: 2.244 },
+  { months: 60, range: "5001-12500", value: 2.211 },
+  { months: 60, range: "12501-25000", value: 2.2 },
+  { months: 60, range: "25001-37500", value: 2.189 },
+  { months: 60, range: "37501-50000", value: 2.178 },
+  { months: 60, range: "50000", value: 2.156 },
+  //---------------------------------------------------
+  { months: 63, range: "500-2500", value: 2.156 },
+  { months: 63, range: "2501-5000", value: 2.145 },
+  { months: 63, range: "5001-12500", value: 2.123 },
+  { months: 63, range: "12501-25000", value: 2.112 },
+  { months: 63, range: "25001-37500", value: 2.101 },
+  { months: 63, range: "37501-50000", value: 2.09 },
+  { months: 63, range: "50000", value: 2.068 },
+];
+
+const allowedIMGFileTypes = ["image/jpeg", "image/png"];
+
+const allowedVideoFileTypes = [
+  "video/mp4",
+  "video/mpeg",
+  "video/ogg",
+  "video/webm",
+  "video/quicktime",
+  "video/x-msvideo",
+  "video/x-ms-wmv",
+  "video/x-flv",
+  "video/3gpp",
+  "video/3gpp2",
+];
+const allowedFileTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "application/pdf",
+  "application/msword",
+];
+export { allowedIMGFileTypes, monthlyInstallments, allowedVideoFileTypes,allowedFileTypes };
