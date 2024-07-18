@@ -8,14 +8,16 @@ import { clearForm } from "../../redux/slice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { locationDemmy, locationMarker } from "../../assets";
+import { useState } from "react";
 
 function FinalReport() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const [loading, setloading] = useState(false)
   const data = useSelector((state) => state.proposalDetails);
 
   const handleDownload = async () => {
+    setloading(true)
     const element = document.getElementById("pdf-content");
 
     // Capture the content
@@ -45,6 +47,7 @@ function FinalReport() {
     }
 
     pdf.save("downloaded.pdf");
+    setloading(false)
   };
 
   const handleClearForm = () => {
@@ -301,7 +304,7 @@ function FinalReport() {
 
           <div className="space-y-5">
             <div>
-              <img src={site.sky_image} alt="" className="w-full h-[24vh]" />
+              <img src={site.sky_image} alt="" className=" h-[24vh]" />
             </div>
             <div>
               <div className="flex justify-start items-start gap-1">
@@ -519,7 +522,7 @@ function FinalReport() {
             className="bg-[#65AC32]"
             type="submit"
           >
-            Download report
+           {loading ? "Downloading..." : "Download report"}
           </Button>
         </div>
       </div>

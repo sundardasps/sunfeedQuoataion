@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 function Report() {
   const data = useSelector((state) => state.proposalDetails);
   return (
-    <div id="pdf-content" className=" absolute  -top-[9999px]   w-[794px]  px-10 ">
+    <div id="pdf-content" className="  absolute -top-[9999px]  w-[794px]  px-10  print:block">
       <div className="flex flex-col    ">
         <img src={logo} alt="" className="w-32 md:w-2/12 " />
 
@@ -185,107 +185,105 @@ function Report() {
           </div>
         </form>
 
-        <h1 className="text-xl  text-start my-2">
-          Construction Site Information
-        </h1>
-        {data.invoice.construction_site.filter((_,index)=>index!==0).map((site,index)=>(
-         <form key={index} className="w-full my-2 rounded-md border-2 p-2  bg-[#F8F8F8] border-[#65AC32]">
-          <div className="grid grid-cols-3 gap-2">
-            <div className="space-y-5">
-              <div>
-                <div className="mb-2 block">
-                  <InputLabel label="Name of the Site" />
+        <h1 className="text-xl text-start my-2">Construction Site Information</h1>
+        {data.invoice.construction_site.filter((_, index) => index !== 0).map((site, index) => (
+          <form key={index} className="w-full my-2 rounded-md border-2 p-2 bg-[#F8F8F8] border-[#65AC32]">
+            <div className="grid grid-cols-3 gap-2">
+              <div className="space-y-5">
+                <div>
+                  <div className="mb-2 block">
+                    <InputLabel label="Name of the Site" />
+                  </div>
+                  <div className="w-full text-xs rounded-md break-words">
+                    {site.name_of_site}
+                  </div>
                 </div>
-                  <div className="w-full text-xs  rounded-md break-words">
-                  {site.name_of_site}
+                <div>
+                  <div className="mb-2 block">
+                    <InputLabel label="Address" />
+                  </div>
+                  <div className="w-full text-xs rounded-md break-words">
+                    {site.address}
+                  </div>
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <InputLabel label="City" />
+                  </div>
+                  <div className="w-full text-xs rounded-md break-words">
+                    {site.city}
+                  </div>
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <InputLabel label="Zip Code" />
+                  </div>
+                  <div className="w-full text-xs rounded-md break-words">
+                    {site.postal_code}
+                  </div>
                 </div>
               </div>
-              <div>
-                <div className="mb-2 block">
-                  <InputLabel label="Address " />
-                </div>
-                  <div className="w-full text-xs  rounded-md break-words">
-                  {site.address}
-                </div>
-              </div>
-              <div>
-                <div className="mb-2 block">
-                  <InputLabel label="City " />
-                </div>
-                  <div className="w-full text-xs  rounded-md break-words">
-                  {site.city}
-                </div>
-              </div>
-              <div>
-                <div className="mb-2 block">
-                  <InputLabel label="Zip Code" />
-                </div>
-                  <div className="w-full text-xs  rounded-md break-words">
-                  {site.postal_code}
-                </div>
-              </div>
-            </div>
 
-            <div className="space-y-5">
-              <div>
-                <div className="mb-2 block">
-                  <InputLabel label="Country" />
+              <div className="space-y-5">
+                <div>
+                  <div className="mb-2 block">
+                    <InputLabel label="Country" />
+                  </div>
+                  <div className="w-full text-xs rounded-md break-words">
+                    {site.country}
+                  </div>
                 </div>
-                  <div className="w-full text-xs  rounded-md break-words">
-                  {site.country}
+                <div>
+                  <div className="mb-2 block">
+                    <InputLabel label="Site Director Email" />
+                  </div>
+                  <div className="w-full text-xs rounded-md break-words">
+                    {site.sitedirector_email}
+                  </div>
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <InputLabel label="Phone Number (Office)" />
+                  </div>
+                  <div className="w-full text-xs rounded-md break-words">
+                    {site.phone_office}
+                  </div>
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <InputLabel label="Phone Number (Mobile)" />
+                  </div>
+                  <div className="w-full text-xs rounded-md break-words">
+                    {site.phone_mobile}
+                  </div>
                 </div>
               </div>
-              <div>
-                <div className="mb-2 block">
-                  <InputLabel label="Site Director Email" />
-                </div>
-                  <div className="w-full text-xs  rounded-md break-words">
-                  {site.sitedirector_email}
-                </div>
-              </div>
-              <div>
-                <div className="mb-2 block">
-                  <InputLabel label="Phone Number (Office)" />
-                </div>
-                  <div className="w-full text-xs  rounded-md break-words">
-                  {site.phone_office}
-                </div>
-              </div>
-              <div>
-                <div className="mb-2 block">
-                  <InputLabel label="Phone Number (Mobile)" />
-                </div>
-                  <div className="w-full text-xs  rounded-md break-words">
-                  {site.phone_mobile}
-                </div>
-              </div>
-            </div>
 
-            <div className="space-y-5">
-              <div>
-                <img src={site.sky_image} alt="" className="w-full h-[24vh]" />
-              </div>
-              <div>
-                <div className="flex justify-start items-start gap-1">
-                  <img src={locationMarker} alt="icon" />
-                  <InputLabel label="Latitude" />
+              <div className="space-y-5">
+                <div>
+                  <img id="img" src={site?.sky_image} alt="Site Image" className="w-full h-[24vh]" />
                 </div>
-                  <div className="w-full text-xs  rounded-md break-words">
-                  {site.gps_tracker[0]}
+                <div>
+                  <div className="flex justify-start items-start gap-1">
+                    <img src={locationMarker} alt="Location Marker" />
+                    <InputLabel label="Latitude" />
+                  </div>
+                  <div className="w-full text-xs rounded-md break-words">
+                    {site.gps_tracker[0]}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="flex justify-start items-start gap-1">
-                  <img src={locationMarker} alt="icon" />
-                  <InputLabel label="Longitude" />
-                </div>
-                  <div className="w-full text-xs  rounded-md break-words">
-                  {site.gps_tracker[1]}
+                <div>
+                  <div className="flex justify-start items-start gap-1">
+                    <img src={locationMarker} alt="Location Marker" />
+                    <InputLabel label="Longitude" />
+                  </div>
+                  <div className="w-full text-xs rounded-md break-words">
+                    {site.gps_tracker[1]}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </form> 
+          </form>
         ))}
       </div>
 

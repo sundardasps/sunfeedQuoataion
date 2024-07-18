@@ -11,3 +11,16 @@
     border: 2px solid black;
     border-radius: 20px;
   }
+
+
+  @media print {
+    #pdf-content {
+      position: static !important;
+      top: auto !important;
+    }
+  
+    .hidden-print {
+      display: none !important;
+    }
+  }
+  
