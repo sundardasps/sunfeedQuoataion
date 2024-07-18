@@ -4,12 +4,30 @@ import { locationDemmy, locationMarker, logo } from "../../assets";
 import { Button } from "flowbite-react";
 import FieldTitle from "./FieldTitle";
 import { useSelector } from "react-redux";
+import { useEffect, useRef, useState } from "react";
 
 
 function Report({invoice_id}) {
   const data = useSelector((state) => state.proposalDetails);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const imageRefs = useRef([]);
+
+  useEffect(() => {
+    const allImagesLoaded = imageRefs.current.every(
+      (img) => img && img.complete && img.naturalHeight !== 0
+    );
+    setImagesLoaded(allImagesLoaded);
+  }, [imageRefs.current]);
+
+  const handleImageLoad = () => {
+    const allImagesLoaded = imageRefs.current.every(
+      (img) => img && img.complete && img.naturalHeight !== 0
+    );
+    setImagesLoaded(allImagesLoaded);
+  };
+
   return (
-    <div id="pdf-content" className=" absolute -top-[9999px]  w-[794px]  px-10  print:block">
+    <div id="pdf-content" className=" absolute -top-[999999px]  w-[794px]  px-10  print:block">
       <div className="flex flex-col  relative  ">
         <img src={logo} alt="" className="w-32 md:w-2/12 " />
         <h1 className="absolute top-4 right-3 text-sm text-start">Invoice id :<span className="font-bold ml-1">{invoice_id}</span></h1>
@@ -261,7 +279,8 @@ function Report({invoice_id}) {
 
               <div className="space-y-5">
                 <div>
-                  <img id="img" src={site?.sky_image} alt="Site Image" className="w-full h-[24vh]" />
+                  <img id="img" src={site?.sky_image} alt="Site Image" className="w-full h-[24vh]" onLoad={handleImageLoad}
+                      ref={(el) => (imageRefs.current[index] = el)} />
                 </div>
                 <div>
                   <div className="flex justify-start items-start gap-1">

@@ -22,44 +22,38 @@ function FinalReport() {
   const data = useSelector((state) => state.proposalDetails);
 
   const handleDownload = async () => {
-    setloading(true);
+    setloading(true)
     const element = document.getElementById("pdf-content");
-  
+
     // Capture the content
-    const canvas = await html2canvas(element, {
-      backgroundColor: "none",
-      logging: true,
-      useCORS: true,
-      allowTaint: false,
-    });
+    const canvas = await html2canvas(element, { backgroundColor: "none",
+      logging: true , useCORS: true });
     const imgData = canvas.toDataURL("image/jpg");
-  
+
     // Generate PDF
     const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
     const imgProps = pdf.getImageProperties(imgData);
-    const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-  
-    let heightLeft = imgHeight;
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    let heightLeft = pdfHeight;
     let position = 0;
-  
-    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
-    heightLeft -= pdfHeight;
-  
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
+
+    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+    heightLeft -= pdf.internal.pageSize.getHeight();
+
+    while (heightLeft >= 0) {
+      position = heightLeft - pdfHeight;
       pdf.addPage();
-      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
-      heightLeft -= pdfHeight;
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pdf.internal.pageSize.getHeight();
     }
-  
+
     pdf.save("downloaded.pdf");
-    setloading(false);
+    setloading(false)
     // dispatch(clearForm());
     // navigate("/step1");
   };
-  
 
   const handleClearForm = () => {
     dispatch(clearForm());
@@ -73,7 +67,7 @@ function FinalReport() {
   },[invoice_id,navigate])
 
   return (
-    <div className="w-11/12  space-y-5 ">
+    <div  className="w-11/12  space-y-5 ">
       <h1 className="absolute top-5 right-5  sm:top-10 sm:right-16 text-xs  sm:text-xl text-start">Invoice id :<span className="font-bold ml-1">{invoice_id}</span></h1>
 
       <h1 className="text-2xl text-start">Contact information</h1>
