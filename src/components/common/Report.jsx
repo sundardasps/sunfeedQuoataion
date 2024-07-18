@@ -6,13 +6,13 @@ import FieldTitle from "./FieldTitle";
 import { useSelector } from "react-redux";
 
 
-function Report() {
+function Report({invoice_id}) {
   const data = useSelector((state) => state.proposalDetails);
   return (
-    <div id="pdf-content" className="  absolute -top-[9999px]  w-[794px]  px-10  print:block">
-      <div className="flex flex-col    ">
+    <div id="pdf-content" className=" absolute -top-[9999px]  w-[794px]  px-10  print:block">
+      <div className="flex flex-col  relative  ">
         <img src={logo} alt="" className="w-32 md:w-2/12 " />
-
+        <h1 className="absolute top-4 right-3 text-sm text-start">Invoice id :<span className="font-bold ml-1">{invoice_id}</span></h1>
         <h1 className="text-xl  text-start my-2">Contact information</h1>
         <form className="w-full rounded-md border-2 p-2  bg-[#F8F8F8] border-[#65AC32]">
           <div className="grid grid-cols-3 gap-2 ">

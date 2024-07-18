@@ -24,7 +24,7 @@ const isValidLatLng = (value, min, max) => {
   return !isNaN(num) && num >= min && num <= max;
 };
 
-const Location = ({ location, setLocation, setFieldValue, errors }) => {
+const Location = ({ location, setLocation, setFieldValue, errors,loading }) => {
   const data = useSelector((state) => state.proposalDetails);
 
   // -----------------------------------------------------------------------------//
@@ -110,7 +110,7 @@ const Location = ({ location, setLocation, setFieldValue, errors }) => {
               }}
               className="w-full"
             >
-              <TextInput />
+              <TextInput disabled={loading} />
             </Autocomplete>
           </div>
           <Button
@@ -118,6 +118,7 @@ const Location = ({ location, setLocation, setFieldValue, errors }) => {
               setLocation(currentLocation);
               map?.panTo(currentLocation);
             }}
+            disabled={loading}
             className="bg-[#65AC32] w-full md:w-auto"
           >
             <Search /> Get Location
@@ -127,27 +128,27 @@ const Location = ({ location, setLocation, setFieldValue, errors }) => {
           <div className="md:w-2/3">
             <div className="flex justify-start items-start gap-1">
               <img src={locationMarker} alt="icon" />
-              <InputLabel label="Latitude" />
+              <InputLabel label="Latitude"  />
             </div>
-            <InputField value={location?.lat} onChange={handleLatChange} />
+            <InputField disabled={loading} value={location?.lat} onChange={handleLatChange}  />
           </div>
           <div className="md:w-2/3">
             <div className="flex justify-start items-start gap-1">
               <img src={locationMarker} alt="icon" />
               <InputLabel label="Longitude" />
             </div>
-            <InputField value={location?.lng} onChange={handleLngChange} />
+            <InputField disabled={loading} value={location?.lng} onChange={handleLngChange} />
           </div>
         </div>
         {errors?.gps_tracker && (
           <ErrorMssgField errorMessage={errors?.gps_tracker} />
         )}
-        <div className="h-[300px] w-full rounded-md">
+        <div className="relative h-[300px] w-full rounded-md">
+          {loading && <div  className="absolute z-50 top-0 w-full h-full  opacity-20" />}
           <div
             id="print"
-            className="flex flex-1 flex-col h-[60%] md:h-full w-full"
+            className=" flex flex-1 flex-col h-[60%] md:h-full w-full "
           >
-            
             <GoogleMap
               mapContainerStyle={{ width: "100%", height: "100%" }}
               center={location}
@@ -170,10 +171,10 @@ const Location = ({ location, setLocation, setFieldValue, errors }) => {
                 setMap(map);
               }}
             >
-              <MarkerF position={location} />
+              <MarkerF  position={location} />
             </GoogleMap>
           </div>
-          <p className="text-sm font-bold ">(Please select your area with read mark.)</p>
+          <p className="text-sm font-bold ">(Please select your area with red mark.)</p>
         </div>
       </>
     ) : (

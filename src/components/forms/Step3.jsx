@@ -41,6 +41,7 @@ function Step3() {
     touched,
     handleSubmit,
     setFieldValue,
+    resetForm
   } = useFormik({
     initialValues: construction_site,
     validationSchema: constructionSiteSchema,
@@ -50,6 +51,7 @@ function Step3() {
         const response = await addNewSite(values, setFieldValue, dispatch);
         if (response.message) {
           setLoading(false);
+          resetForm()
           navigate("/step4");
         }
       } catch (error) {
@@ -88,6 +90,7 @@ function Step3() {
               name="address"
               onBlur={handleBlur}
               onChange={handleChange}
+              disabled={loading}
             />
             {errors.address && touched.address && (
               <ErrorMssgField errorMessage={errors.address} />
@@ -102,6 +105,7 @@ function Step3() {
               name="city"
               onBlur={handleBlur}
               onChange={handleChange}
+              disabled={loading}
             />
             {errors.city && touched.city && (
               <ErrorMssgField errorMessage={errors.city} />
@@ -116,6 +120,7 @@ function Step3() {
               name="postal_code"
               onBlur={handleBlur}
               onChange={(e) => numberValidation(e, handleChange)}
+              disabled={loading}
             />
             {errors.postal_code && touched.postal_code && (
               <ErrorMssgField errorMessage={errors.postal_code} />
@@ -130,6 +135,7 @@ function Step3() {
               name="country"
               onBlur={handleBlur}
               onChange={handleChange}
+              disabled={loading}
             />
             {errors.country && touched.country && (
               <ErrorMssgField errorMessage={errors.country} />
@@ -144,6 +150,7 @@ function Step3() {
               name="sitedirector_email"
               onBlur={handleBlur}
               onChange={handleChange}
+              disabled={loading}
             />
             {errors.sitedirector_email && touched.sitedirector_email && (
               <ErrorMssgField errorMessage={errors.sitedirector_email} />
@@ -158,6 +165,7 @@ function Step3() {
               name="sitedirector_contact"
               onBlur={handleBlur}
               onChange={(e) => numberValidation(e, handleChange)}
+              disabled={loading}
             />
             {errors.sitedirector_contact && touched.sitedirector_contact && (
               <ErrorMssgField errorMessage={errors.sitedirector_contact} />
@@ -172,6 +180,7 @@ function Step3() {
               name="phone_office"
               onBlur={handleBlur}
               onChange={(e) => numberValidation(e, handleChange)}
+              disabled={loading}
             />
             {errors.phone_office && touched.phone_office && (
               <ErrorMssgField errorMessage={errors.phone_office} />
@@ -186,6 +195,7 @@ function Step3() {
               name="phone_mobile"
               onBlur={handleBlur}
               onChange={(e) => numberValidation(e, handleChange)}
+              disabled={loading}
             />
             {errors.phone_mobile && touched.phone_mobile && (
               <ErrorMssgField errorMessage={errors.phone_mobile} />
@@ -199,6 +209,7 @@ function Step3() {
             setLocation={setLocation}
             setFieldValue={setFieldValue}
             errors={errors}
+            loading={loading}
           />
           <div className="my-5">
             <div className="mb-2 block">
@@ -238,7 +249,7 @@ function Step3() {
       </form>
       <div className="flex justify-center items-center gap-3 my-5">
         <h3>{data.invoice.construction_site.length - 1} site added </h3>
-        <Button className="bg-[#65AC32]" onClick={handleSubmit}>
+        <Button disabled={loading} className="bg-[#65AC32]" onClick={handleSubmit}>
           {loading ? "Uploading..." : "Add new site"}
         </Button>
       </div>
@@ -248,9 +259,10 @@ function Step3() {
             data.invoice.construction_site[
               data.invoice.construction_site.length - 1
             ]
-          ).some((value) => value === "")}
+          ).some((value) => value === "") || loading }
           className="bg-[#65AC32]"
-          onClick={() => navigate("/step4")}
+          onClick={() =>{resetForm(),navigate("/step4")}}
+          
         >
           Next
         </Button>

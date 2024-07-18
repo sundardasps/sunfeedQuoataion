@@ -5,58 +5,77 @@ import FieldTitle from "../common/FieldTitle";
 import html2canvas from "html2canvas";
 import { Button } from "flowbite-react";
 import { clearForm } from "../../redux/slice";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { locationDemmy, locationMarker } from "../../assets";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function FinalReport() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setloading] = useState(false)
+  const params = useLocation()
+  const {invoice_id} = params.state
+  
+
+
   const data = useSelector((state) => state.proposalDetails);
 
   const handleDownload = async () => {
-    setloading(true)
+    setloading(true);
     const element = document.getElementById("pdf-content");
-
+  
     // Capture the content
     const canvas = await html2canvas(element, {
+      backgroundColor: "none",
+      logging: true,
       useCORS: true,
-      allowTaint: true,
+      allowTaint: false,
     });
-    const imgData = canvas.toDataURL("image/png");
-
+    const imgData = canvas.toDataURL("image/jpg");
+  
     // Generate PDF
     const pdf = new jsPDF("p", "mm", "a4");
-    const imgProps = pdf.getImageProperties(imgData);
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    let heightLeft = pdfHeight;
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  
+    let heightLeft = imgHeight;
     let position = 0;
-
-    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-    heightLeft -= pdf.internal.pageSize.getHeight();
-
-    while (heightLeft >= 0) {
-      position = heightLeft - pdfHeight;
+  
+    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
+    heightLeft -= pdfHeight;
+  
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
       pdf.addPage();
-      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
-      heightLeft -= pdf.internal.pageSize.getHeight();
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
+      heightLeft -= pdfHeight;
     }
-
+  
     pdf.save("downloaded.pdf");
-    setloading(false)
+    setloading(false);
+    // dispatch(clearForm());
+    // navigate("/step1");
   };
+  
 
   const handleClearForm = () => {
     dispatch(clearForm());
     navigate("/step1");
   };
 
+  useEffect(()=>{
+   if(!invoice_id){
+    navigate('/step5')
+   }
+  },[invoice_id,navigate])
+
   return (
     <div className="w-11/12  space-y-5 ">
+      <h1 className="absolute top-5 right-5  sm:top-10 sm:right-16 text-xs  sm:text-xl text-start">Invoice id :<span className="font-bold ml-1">{invoice_id}</span></h1>
+
       <h1 className="text-2xl text-start">Contact information</h1>
       <form className="w-full rounded-md border-2 px-5 space-y-2 bg-[#F8F8F8] border-[#65AC32]">
         <div className="grid sm:grid-cols-3 gap-3 my-5">
@@ -526,7 +545,7 @@ function FinalReport() {
           </Button>
         </div>
       </div>
-      <Report />
+      <Report invoice_id={invoice_id}/>
     </div>
   );
 }

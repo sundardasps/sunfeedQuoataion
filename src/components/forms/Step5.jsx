@@ -14,11 +14,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { financial_statementUpdate } from "../../redux/slice";
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import { addInvoice } from "../../api";
+import toast, { Toaster } from "react-hot-toast";
 
 function Step5() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [month, setMonth] = useState(0);
+  const [loading, setLoading] = useState(false);
   const data = useSelector((state) => state.proposalDetails);
   const monthAlreadyHave = Number(
     data.invoice.financial_statement.number_of_months
@@ -49,8 +51,10 @@ function Step5() {
     initialValues: data.invoice.financial_statement,
     validationSchema: financialStatementSchema,
     onSubmit: async (values) => {
-      dispatch(financial_statementUpdate(values));
+      try {
 
+      setLoading(true)
+      dispatch(financial_statementUpdate(values));
       const invoiceData = {
         invoice: {
           contact_information: {
@@ -116,9 +120,17 @@ function Step5() {
       };
       console.log(invoiceData);
       const response = await addInvoice(invoiceData)
-      console.log(response,"jjjjj");
       if(response.data.status === "success"){
-      navigate("/reportoverview");}
+        navigate("/reportoverview",{state:{invoice_id:response.data.invoice_id}});
+      }else{
+        setLoading(false)
+        toast.error("Failed to add invoice. Please try again.");
+       }
+               
+      } catch (error) {
+        console.log(error);
+        setLoading(false)
+      }
     },
   });
 
@@ -136,11 +148,12 @@ function Step5() {
       const month = Number(totalMonths);
       const depositeNumber = Number(deposite);
 
-      if (amount < depositeNumber || amount < 500) {
+      if (amount <= depositeNumber || amount < 500 ) {
         setFieldValue("monthly_payment", "");
         setFieldValue("interest", "");
         return;
       }
+      
 
       const entries = monthlyInstallments.filter(
         ({ months }) => months === month
@@ -216,6 +229,7 @@ function Step5() {
             name="total_payment"
             onBlur={handleBlur}
             onChange={(e) => numberValidation(e, handleChange)}
+            disabled={loading}
           />
           {errors.total_payment && touched.total_payment && (
             <ErrorMssgField errorMessage={errors.total_payment} />
@@ -236,6 +250,7 @@ function Step5() {
                 <Button
                   onClick={handleDecrement}
                   className="rounded-r-none bg-slate-200 text-black "
+                  disabled={loading}
                 >
                   -
                 </Button>
@@ -244,10 +259,12 @@ function Step5() {
                   name="number_of_months"
                   className="w-12 border-none text-center "
                   value={availableMonths[month]}
+                  disabled={loading}
                 />
                 <Button
                   onClick={handleIncrement}
                   className="rounded-l-none bg-slate-200 text-black"
+                  disabled={loading}
                 >
                   +
                 </Button>
@@ -258,7 +275,7 @@ function Step5() {
                 <InputLabel label="Rate Of Interest " />
               </div>
 
-              <TextInput value={values.interest} className="w-32 " />
+              <TextInput disabled={loading} value={values.interest} className="w-32 " />
 
               {/* <div className="flex w-min border-2 rounded-xl">
                 <Button className="rounded-r-none bg-slate-200 text-black ">
@@ -280,6 +297,7 @@ function Step5() {
               name="deposit"
               onBlur={handleBlur}
               onChange={(e) => numberValidation(e, handleChange)}
+              disabled={loading}
             />
             {errors.deposit && touched.deposit && (
               <ErrorMssgField errorMessage={errors.deposit} />
@@ -293,6 +311,7 @@ function Step5() {
               value={values.monthly_payment}
               name="monthly_payment"
               onBlur={handleBlur}
+              disabled={loading}
             />
             {errors.monthly_payment && touched.monthly_payment && (
               <ErrorMssgField errorMessage={errors.monthly_payment} />
@@ -303,9 +322,10 @@ function Step5() {
         ""
       )}
 
-      <Button className="bg-[#65AC32]" type="submit">
-        Next <ArrowRight />{" "}
+      <Button disabled={loading}  className="bg-[#65AC32]" type="submit">
+      {loading ? "Uploading..." :<>Next<ArrowRight /></>}
       </Button>
+      <Toaster position="top-right" reverseOrder={false} />
     </form>
   );
 }

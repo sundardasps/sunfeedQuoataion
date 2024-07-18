@@ -31,6 +31,7 @@ function Step2() {
     touched,
     handleSubmit,
     setFieldValue,
+    resetForm
   } = useFormik({
     initialValues: {
       company_name: data.invoice.company_information.company_name
@@ -90,9 +91,11 @@ function Step2() {
           ...values.electricity_bill,
           ...values.annual_number_report,
         ];
+        const nonEmptyFiles = administration_files.filter((values)=> values.name && values  )
+
         const response = await s3FileUploader(
-          administration_files.length,
-          administration_files,
+          nonEmptyFiles.length,
+          nonEmptyFiles,
           
         );
 
@@ -102,6 +105,7 @@ function Step2() {
         dispatch(uuidUpdate(uuids));
 
         dispatch(company_informationUpdate(values));
+        resetForm()
         navigate("/step3");
       } catch (error) {
         console.log(error);
@@ -340,7 +344,7 @@ function Step2() {
           <ErrorMssgField errorMessage={errors.electricity_bill} />
         )}
       </div>
-      <Button className="bg-[#65AC32]" type="submit">
+      <Button disabled={loading} className="bg-[#65AC32]" type="submit">
        {loading ? "Uploading..." :<>Next<ArrowRight /></>}
       </Button>
     </form>
