@@ -18,13 +18,16 @@ import { s3FileUploader } from "../../utils/addNewSite";
 import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { useJsApiLoader } from "@react-google-maps/api";
+import toast from "react-hot-toast";
 
 function Step2() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setloading] = useState(false);
   const [file, setFile] = useState([]);
+
   const data = useSelector((state) => state.proposalDetails);
+
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -63,11 +66,10 @@ function Step2() {
     touched,
     handleSubmit,
     setFieldValue,
-    resetForm,
   } = useFormik({
     initialValues: initialValue,
     validationSchema: company_informationSchema,
-    onSubmit: async (value, { resetForm }) => {
+    onSubmit: async (value) => {
       try {
         setloading(true);
         const administration_files = [
@@ -80,7 +82,9 @@ function Step2() {
         const nonEmptyFiles = administration_files.filter(
           (file) => file.name && file
         );
-       
+
+        
+
         const response = await s3FileUploader(
           nonEmptyFiles.length,
           nonEmptyFiles
@@ -93,8 +97,25 @@ function Step2() {
           dispatch(uuidUpdate(uuids));
         }
 
-        dispatch(company_informationUpdate(value));
-        navigate("/step3");
+          const dispatchValues = {
+            company_name: value.company_name,
+            address_headquarters: value.address_headquarters,
+            email: value.email,
+            city: value.city,
+            country: value.country,
+            postal_code: value.postal_code,
+            company_vat_number: value.company_vat_number,
+            phone_number_office: value.phone_number_office,
+            phone_number_mobile: value.phone_number_mobile,
+            iban_number: value.iban_number,
+            electricity_bill: [{}],
+            construction_permit: [{}],
+            annual_number_report: [{}],
+            recto_and_verse_link: [{}],
+          };
+          dispatch(company_informationUpdate(dispatchValues));
+          navigate("/step3");
+
       } catch (error) {
         console.log(error);
       } finally {
