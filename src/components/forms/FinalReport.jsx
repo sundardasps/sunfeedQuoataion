@@ -3,11 +3,11 @@ import Report from "../common/Report";
 import InputLabel from "../common/InputLabel";
 import FieldTitle from "../common/FieldTitle";
 import html2canvas from "html2canvas";
-import { Button } from "flowbite-react";
+import { Button, Label } from "flowbite-react";
 import { clearForm } from "../../redux/slice";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { locationDemmy, locationMarker } from "../../assets";
+import { locationMarker } from "../../assets";
 import { useEffect, useState } from "react";
 
 function FinalReport() {
@@ -26,9 +26,9 @@ function FinalReport() {
     const element = document.getElementById("pdf-content");
 
     // Capture the content
-    const canvas = await html2canvas(element, { backgroundColor: "none",
-      logging: true , useCORS: true });
-    const imgData = canvas.toDataURL("image/jpg");
+    const canvas = await html2canvas(element, {
+      logging: true , useCORS: true, allowTaint:true });
+    const imgData = canvas.toDataURL("image/png");
 
     // Generate PDF
     const pdf = new jsPDF("p", "mm", "a4");
@@ -67,7 +67,7 @@ function FinalReport() {
   },[invoice_id,navigate])
 
   return (
-    <div  className="w-11/12  space-y-5 ">
+    <div  className="w-11/12  space-y-2 ">
       <h1 className="absolute top-5 right-5  sm:top-10 sm:right-16 text-xs  sm:text-xl text-start">Invoice id :<span className="font-bold ml-1">{invoice_id}</span></h1>
 
       <h1 className="text-2xl text-start">Contact information</h1>
@@ -317,7 +317,7 @@ function FinalReport() {
 
           <div className="space-y-5">
             <div>
-              <img src={site.sky_image} alt="" className=" h-[24vh]" />
+              <img crossOrigin="true" src={site.sky_image} alt="" className=" h-[24vh]" />
             </div>
             <div>
               <div className="flex justify-start items-start gap-1">
@@ -446,71 +446,53 @@ function FinalReport() {
           <FieldTitle label="Payment method" />
         </div>
 
-        <div className="max-w-md">
+        <div className="max-w-md space-y-1">
           <div>
-            <div className="mb-2 block">
-              <InputLabel label="Total Payment" />
+            <div className=" block">
+              <Label className="">Total Payment</Label>
             </div>
-            <div className="w-full text-xs  rounded-md">
-              {data?.invoice?.financial_statement?.total_payment}
+              <div className="w-full text-xs  rounded-md break-words">
+              {data.invoice.financial_statement.total_payment}
             </div>
           </div>
-          {data?.invoice?.financial_statement?.payment_method === "monthly" ? (
+          {data.invoice.financial_statement.payment_method === "monthly" ? (
             <>
               {" "}
-              <div className="col-span-2  flex gap-4 justify-between items-end">
-                <div className="w-full">
-                  <div className="flex justify-start items-start gap-1">
-                    <InputLabel label="No. Of Months" />
+              <div className="flex  ">
+                <div className="w-1/2 ">
+                  <div className="flex justify-start  items-start pb-2">
+                    <Label className="">No. Of Months</Label>
                   </div>
-                  <div className="flex w-min border-2 rounded-xl">
-                    <Button
-                      disabled
-                      className="rounded-r-none bg-slate-200 text-black"
-                    >
-                      -
-                    </Button>
-                    <input
-                      type="text"
-                      value={
-                        data?.invoice?.financial_statement?.number_of_months
-                      }
-                      className="w-12 border-none text-center"
-                    />
-                    <Button
-                      disabled
-                      className="rounded-l-none bg-slate-200 text-black"
-                    >
-                      +
-                    </Button>
+              
+                    <div className="  w-full text-xs  rounded-md   ">
+                    {data.invoice.financial_statement.number_of_months}
                   </div>
                 </div>
-                <div className="w-full">
-                  <div className="flex justify-center items-center  gap-1   ">
-                    <InputLabel label="Rate Of Interest " />
+                <div className="w-full   ">
+                  <div className="flex justify-start items-start  pb-2   ">
+                    <Label className="">Rate Of Interest</Label>
                   </div>
-
-                  <div className=" w-full text-xs  rounded-md text-center">
-                    {data?.invoice?.financial_statement?.interest}
+                  <div className="  w-full text-xs  rounded-md   ">
+                    {data.invoice.financial_statement.interest}
                   </div>
                 </div>
               </div>
               <div>
-                <div className="mb-2 block">
-                  <InputLabel label="Deposit" />
+                <div className=" block">
+                  <Label className="">Deposit</Label>
                 </div>
-                <div className="w-full text-xs  rounded-md">
-                  {data?.invoice?.financial_statement?.deposit
-                    ? data?.invoice?.financial_statement?.deposit
+                  <div className="w-full text-xs  rounded-md break-words">
+                  {data.invoice.financial_statement.deposit
+                    ? data.invoice.financial_statement.deposit
                     : 0}
                 </div>
               </div>
               <div>
-                <div className="mb-2 block">
-                  <InputLabel label="Monthly Payment" />
+                <div className=" block">
+                  <Label className="">Monthly Payment</Label>
                 </div>
-                <div className="w-full text-xs  rounded-md">
-                  {data?.invoice?.financial_statement?.monthly_payment}
+                  <div className="w-full text-xs  rounded-md break-words">
+                  {data.invoice.financial_statement.monthly_payment}
                 </div>
               </div>
             </>

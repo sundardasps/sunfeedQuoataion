@@ -103,12 +103,13 @@ function Step5() {
             workforce: Number(data.invoice.product_information.workforce),
           },
           financial_statement: {
-            deposit: data.invoice.financial_statement.deposit ? Number(data.invoice.financial_statement.deposit) : 0,
-            total_payment: data.invoice.financial_statement.total_payment ? Number(data.invoice.financial_statement.total_payment) : 0,
+            deposit: values.deposit ? Number(values.deposit) : 0,
+            total_payment:values.total_payment ? Number(values.total_payment) : 0,
             down_payment: 0,
-            monthly_or_full: data.invoice.financial_statement.payment_method === "monthly" ? 0 : 1 ,
-            interest:  data.invoice.financial_statement.interest ? Number(data.invoice.financial_statement.interest) : 0,
-            number_of_months:  data.invoice.financial_statement.number_of_months ? Number(data.invoice.financial_statement.number_of_months) : 0,
+            monthly_or_full: values.payment_method === "monthly" ? 0 : 1 ,
+            interest:  values.interest ? Number(values.interest) : 0,
+            number_of_months:  values.number_of_months ? Number(values.number_of_months) : 0,
+            monthly_payment: values.monthly_payment ? Number(values.monthly_payment) : 0,
           },
         },
         uuids: {

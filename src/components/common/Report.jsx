@@ -9,25 +9,10 @@ import { useEffect, useRef, useState } from "react";
 
 function Report({invoice_id}) {
   const data = useSelector((state) => state.proposalDetails);
-  const [imagesLoaded, setImagesLoaded] = useState(false);
-  const imageRefs = useRef([]);
 
-  useEffect(() => {
-    const allImagesLoaded = imageRefs.current.every(
-      (img) => img && img.complete && img.naturalHeight !== 0
-    );
-    setImagesLoaded(allImagesLoaded);
-  }, [imageRefs.current]);
-
-  const handleImageLoad = () => {
-    const allImagesLoaded = imageRefs.current.every(
-      (img) => img && img.complete && img.naturalHeight !== 0
-    );
-    setImagesLoaded(allImagesLoaded);
-  };
 
   return (
-    <div id="pdf-content" className=" absolute -top-[99999px]  w-[794px]  px-5  print:block  py-5">
+    <div id="pdf-content" className="   w-[794px]  px-5  print:block  py-5">
       <div className="flex flex-col  relative  ">
         <img src={logo} alt="" className="w-32 md:w-2/12 " />
         <h1 className="absolute top-4 right-3 text-sm text-start">Invoice id :<span className="font-bold ml-1">{invoice_id}</span></h1>
@@ -279,20 +264,20 @@ function Report({invoice_id}) {
 
               <div className="space-y-5">
                 <div>
-                  <img id="img" src={site?.sky_image} alt="Site Image" className="w-full h-[26vh] " onLoad={handleImageLoad}
-                      ref={(el) => (imageRefs.current[index] = el)} />
+                  <img crossOrigin="true" id="img" src={site?.sky_image} alt="Site Image" className="w-full" 
+                      />
                 </div>
                 <div className="flex justify-between">
-                <div>
+                <div className="text-center">
                   <div className="flex justify-start items-start gap-1">
                     <img src={locationMarker} alt="Location Marker" />
                     <Label className="">Latitude</Label>
                   </div>
-                  <div className="w-full text-xs rounded-md break-words">
+                  <div className="w-full text-xs rounded-md   break-words">
                     {site.gps_tracker[0]}
                   </div>
                 </div>
-                <div>
+                <div className="text-center">
                   <div className="flex justify-start items-start gap-1">
                     <img src={locationMarker} alt="Location Marker" />
                     <Label className="">Longitude</Label>
@@ -410,7 +395,7 @@ function Report({invoice_id}) {
           <Label className="text-xl">Payment method</Label>
         </div>
 
-        <div className="max-w-md">
+        <div className="max-w-md space-y-1">
           <div>
             <div className=" block">
               <Label className="">Total Payment</Label>
@@ -422,37 +407,21 @@ function Report({invoice_id}) {
           {data.invoice.financial_statement.payment_method === "monthly" ? (
             <>
               {" "}
-              <div className="col-span-2  flex gap-4 justify-between items-end my-3">
-                <div className="w-full">
-                  <div className="flex justify-start items-start pb-2">
+              <div className="flex  ">
+                <div className="w-1/2 ">
+                  <div className="flex justify-start  items-start pb-2">
                     <Label className="">No. Of Months</Label>
                   </div>
-                  <div className="flex w-min border-2 rounded-xl">
-                    <Button
-                      disabled
-                      className="rounded-r-none bg-slate-200 text-black"
-                    >
-                      -
-                    </Button>
-                    <input
-                      type="text"
-                      value={data.invoice.financial_statement.number_of_months}
-                      className="w-12 border-none text-center"
-                    />
-                    <Button
-                      disabled
-                      className="rounded-l-none bg-slate-200 text-black"
-                    >
-                      +
-                    </Button>
+              
+                    <div className="  w-full text-xs  rounded-md   ">
+                    {data.invoice.financial_statement.number_of_months}
                   </div>
                 </div>
                 <div className="w-full   ">
-                  <div className="flex justify-center items-center  pb-2   ">
-                    <InputLabel label="Rate Of Interest " />
+                  <div className="flex justify-start items-start  pb-2   ">
+                    <Label className="">Rate Of Interest</Label>
                   </div>
-
-                  <div className="  w-full text-xs  rounded-md text-center h-8 ">
+                  <div className="  w-full text-xs  rounded-md   ">
                     {data.invoice.financial_statement.interest}
                   </div>
                 </div>
