@@ -89,7 +89,6 @@ function FinalReport() {
 
   const handleDownload = async () => {
     setloading(true)
-    console.log(invoiceData);
     const response = await addInvoice(invoiceData)
    if(response.data.status === "success"){
      const invoiceIdDiv = document.getElementById("invoiceId")
@@ -123,7 +122,10 @@ function FinalReport() {
     setloading(false)}
   }
    
-
+  const handleClearForm = () => {
+    dispatch(clearForm());
+    navigate("/step1");
+  };
 
 
   return (
@@ -562,6 +564,15 @@ function FinalReport() {
         </div>
       </form>
       <div className="flex justify-end gap-5">
+      <div className="flex justify-center my-5">
+          <Button
+            onClick={() => handleClearForm()}
+            className="bg-[#65AC32]"
+            type="submit"
+          >
+            Clear form
+          </Button>
+        </div>
         <div className="flex justify-center my-5">
           <Button
             onClick={() => handleDownload()}
