@@ -248,7 +248,7 @@ function Step2() {
           value={values.company_vat_number}
           name="company_vat_number"
           onBlur={handleBlur}
-          onChange={(e) => numberValidation(e, handleChange)}
+          onChange={handleChange}
           disabled={loading}
         />
         {errors.company_vat_number && touched.company_vat_number && (
@@ -263,7 +263,7 @@ function Step2() {
           value={values.iban_number}
           name="iban_number"
           onBlur={handleBlur}
-          onChange={(e) => numberValidation(e, handleChange)}
+          onChange={handleChange}
           disabled={loading}
         />
         {errors.iban_number && touched.iban_number && (

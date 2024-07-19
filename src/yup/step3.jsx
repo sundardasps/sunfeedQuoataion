@@ -19,7 +19,7 @@ const construction_site = {
 }
 
 const constructionSiteSchema = Yup.object().shape({
-  name: Yup.string()
+  name: Yup.string().matches(/^[a-zA-Z\s]+$/,"This field can only contain letters")
     .required("This field is required")
     .min(2, "Please enter at least 2 characters")
     .trim(),
@@ -41,7 +41,7 @@ const constructionSiteSchema = Yup.object().shape({
   sitedirector_contact: Yup.string()
     .required("This field is required")
     .matches(/^\+?[1-9]\d{1,14}$/, "Please enter a valid contact number")
-    .trim(),
+    .trim().min(10,"Invalid phone number").max(10,"Invalid phone number"),
   sitedirector_email: Yup.string()
     .required("This field is required")
     .email("Please enter a valid email address")
@@ -49,10 +49,10 @@ const constructionSiteSchema = Yup.object().shape({
   phone_office: Yup.string()
     .required("This field is required")
     .matches(/^\+?[1-9]\d{1,14}$/, "Please enter a valid contact number")
-    .trim(),
+    .trim().min(10,"Invalid phone number").max(10,"Invalid phone number"),
   phone_mobile: Yup.string()
     .required("This field is required")
-    .matches(/^\+?[1-9]\d{1,14}$/, "Please enter a valid contact number")
+    .matches(/^\+?[1-9]\d{1,14}$/, "Please enter a valid contact number").min(10,"Invalid phone number").max(10,"Invalid phone number")
     .trim(),
   gps_tracker: Yup.array()
     .min(2, "At least one GPS tracker is required (Please click anywhere in map to select.) "),

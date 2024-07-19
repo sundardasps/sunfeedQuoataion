@@ -16,11 +16,11 @@ const contact_information = {
   }
 
   const contactInformationSchema = Yup.object().shape({
-    company_name: Yup.string()
+    company_name: Yup.string().matches(/^[a-zA-Z\s]+$/,"This field can only contain letters")
       .required("This field is required")
       .min(2, "Please enter at least 2 characters")
       .trim(),
-    customer_name: Yup.string()
+    customer_name: Yup.string().matches(/^[a-zA-Z\s]+$/,"This field can only contain letters")
       .required("This field is required")
       .min(2, "Please enter at least 2 characters")
       .trim(),
@@ -43,16 +43,14 @@ const contact_information = {
       .required("This field is required")
       .min(2, "Please enter at least 2 characters")
       .trim(),
-    // company_vat_number: Yup.string()
-    //   .required("This field is required")
-    //   .min(5, "Please enter at least 5 characters")
-    //   .trim(),
     phone_number_office: Yup.string()
       .required("This field is required")
-      .matches(/^\+?[0-9\s-]{7,15}$/, "Invalid phone number"),
+      .matches(/^\+?[0-9\s-]{7,15}$/, "Invalid phone number")
+      .min(10,"Invalid phone number").max(10,"Invalid phone number"),
     phone_number_mobile: Yup.string()
       .required("This field is required")
-      .matches(/^\+?[0-9\s-]{7,15}$/, "Invalid phone number"),
+      .matches(/^\+?[0-9\s-]{7,15}$/, "Invalid phone number")
+      .min(10,"Invalid phone number").max(10,"Invalid phone number"),
     email: Yup.string()
       .required("This field is required")
       .email("Invalid email address"),
