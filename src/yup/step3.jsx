@@ -48,11 +48,11 @@ const constructionSiteSchema = Yup.object().shape({
     .trim(),
   phone_office: Yup.string()
     .required("This field is required")
-    .matches(/^\+?[1-9]\d{1,14}$/, "Please enter a valid contact number")
+    .matches(/^\+?[0-9\s-]{7,15}$/, "Invalid phone number").min(10,"Invalid phone number").max(10,"Invalid phone number")
     .trim().min(10,"Invalid phone number").max(10,"Invalid phone number"),
   phone_mobile: Yup.string()
     .required("This field is required")
-    .matches(/^\+?[1-9]\d{1,14}$/, "Please enter a valid contact number").min(10,"Invalid phone number").max(10,"Invalid phone number")
+    .matches(/^\+?[0-9\s-]{7,15}$/, "Invalid phone number").min(10,"Invalid phone number").max(10,"Invalid phone number")
     .trim(),
   gps_tracker: Yup.array()
     .min(2, "At least one GPS tracker is required (Please click anywhere in map to select.) "),

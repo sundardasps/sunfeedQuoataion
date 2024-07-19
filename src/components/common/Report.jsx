@@ -1,21 +1,17 @@
 
-import InputLabel from "./InputLabel";
-import { locationDemmy, locationMarker, logo } from "../../assets";
-import { Button, Label } from "flowbite-react";
-import FieldTitle from "./FieldTitle";
+import { locationMarker, logo } from "../../assets";
+import {  Label } from "flowbite-react";
 import { useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
 
 
-function Report({invoice_id}) {
+
+function Report() {
   const data = useSelector((state) => state.proposalDetails);
-
-
   return (
-    <div id="pdf-content" className="   w-[794px]  px-5  print:block  py-5">
+    <div id="pdf-content" className=" absolute -top-[99999px]  w-[794px]  px-5  print:block  py-5">
       <div className="flex flex-col  relative  ">
         <img src={logo} alt="" className="w-32 md:w-2/12 " />
-        <h1 className="absolute top-4 right-3 text-sm text-start">Invoice id :<span className="font-bold ml-1">{invoice_id}</span></h1>
+        <h1 className="absolute top-4 right-3 text-sm text-start">Invoice id :<span id="invoiceId" className="font-bold ml-1"></span></h1>
         <h1 className="text-base  text-start font-bold my-2">Contact information</h1>
         <form className="w-full rounded-md border-2 p-2  bg-[#F8F8F8] border-[#65AC32]">
           <div className="grid grid-cols-3 gap-2 ">

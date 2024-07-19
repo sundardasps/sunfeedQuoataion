@@ -50,7 +50,7 @@ function Layout() {
   return (
     <div className=" ">
       <Navbar />
-      <div className={`flex justify-between items-center mt-5   m-auto ${pathname === "/step3" ? "w-full" : "max-w-md"}`}>
+      <div className={`flex justify-between items-center    m-auto ${pathname === "/step3" ? "w-full" : "max-w-md"}`}>
         <div className=" absolute ml-5 flex-shrink-0  ">
           {currentPageNo > 1 && currentPageNo <= 5 ? (
             <PrevPageButton route={`/step${Number(currentPageNo) - 1}`} />
@@ -62,7 +62,7 @@ function Layout() {
           <h1 className="capitalize text-2xl font-extrabold">{formatedName}</h1>
         </div>
       </div>
-      <div className="flex justify-center items-center  my-5  ">
+      <div className="flex justify-center items-center  my-5 p-3 ">
         <Outlet />
       </div>
     </div>

@@ -18,10 +18,7 @@ export async function addNewSite(values, setFieldValue, dispatch) {
       imagesUploadPromise,
       videosUploadPromise,
     ]);
-  console.log(skyImgUpload);
-  console.log(imagesUpload);
-  console.log(videosUpload);
-  
+
       // Construct the new site object
       const newSite = {
         ...values,
@@ -31,7 +28,6 @@ export async function addNewSite(values, setFieldValue, dispatch) {
       };
   
       // Dispatch the updated construction site data
-      console.log(newSite,'fff');
       dispatch(construction_siteUpdate([{ ...newSite }]));
   
       // Update uuids
@@ -71,6 +67,7 @@ async function captureScreenshot() {
 }
 
 export async function s3FileUploader(size, files, isSkyImg = false) {
+  
   if (size === 0) return [];
 
   const response = await getS3PresignedURL(size);

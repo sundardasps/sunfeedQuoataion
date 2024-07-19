@@ -3,7 +3,7 @@ import { logo } from '../../assets'
 
 function Navbar() {
   return (
-    <div className=''>
+    <div className='mb-3'>
         <img src={logo} alt="" className='w-32 md:w-2/12 ' />
     </div>
   )

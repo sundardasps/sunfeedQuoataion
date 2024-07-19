@@ -9,26 +9,96 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { locationMarker } from "../../assets";
 import { useEffect, useState } from "react";
+import { addInvoice } from "../../api";
+import PrevPageButton from "../common/PrevPageButton";
 
 function FinalReport() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setloading] = useState(false)
-  const params = useLocation()
-  const {invoice_id} = params.state
+
   
 
 
   const data = useSelector((state) => state.proposalDetails);
+  const invoiceData = {
+    invoice: {
+      contact_information: {
+        company_name: data.invoice.contact_information.company_name,
+        customer_name: data.invoice.contact_information.customer_name,
+        address_headquarters: data.invoice.contact_information.address_headquarters,
+        city: data.invoice.contact_information.city,
+        postal_code: data.invoice.contact_information.postal_code,
+        country: data.invoice.contact_information.country,
+        company_vat_number: data.invoice.company_information.company_vat_number, // vat from another field
+        phone_number_office: data.invoice.contact_information.phone_number_office,
+        phone_number_mobile: data.invoice.contact_information.phone_number_mobile,
+        email: data.invoice.contact_information.email,
+      },
+      construction_site:
+        data.invoice.construction_site.filter((_,index)=>index!==0).map(site => ({
+        name: site.name,
+        address: site.address,
+        postal_code: site.postal_code,
+        country: site.country,
+        sitedirector_contact: site.sitedirector_contact,
+        sitedirector_email: site.sitedirector_email,
+        phone_office: site.phone_office,
+        phone_mobile: site.phone_mobile,
+        gps_tracker: site.gps_tracker, 
+      })),
+      product_information: {
+        inverters: data.invoice.product_information.inverters,
+        solar_panel: data.invoice.product_information.solar_panel,
+        fixation_type: data.invoice.product_information.fixation_type,
+        cable: data.invoice.product_information.cable,
+        cable_length: 0,
+        electrical_board: data.invoice.product_information.electrical_board,
+        option: data.invoice.product_information.inverters,
+        ground_opening_size: Number(data.invoice.product_information.ground_opening_size),
+        earthworks: 0,
+        driver_transformer: data.invoice.product_information.driver_transformer,
+        waterproof_coating: Number(data.invoice.product_information.waterproof_coating),
+        technical_studies: data.invoice.product_information.technical_studies,
+        construction_permit_fees:Number(data.invoice.product_information.construction_permit_fees),
+        engine_rental: Number(data.invoice.product_information.engine_rental),
+        dumpster: data.invoice.product_information.inverters,
+        complete_kit: 0,
+        complete_warehouse:"string",
+        carport: 0,
+        workforce: Number(data.invoice.product_information.workforce),
+      },
+      financial_statement: {
+        deposit: data.invoice.financial_statement.deposit ? Number(data.invoice.financial_statement.deposit) : 0,
+        total_payment: data.invoice.financial_statement.total_payment ? Number(data.invoice.financial_statement.total_payment) : 0,
+        down_payment: 0,
+        monthly_or_full: data?.invoice?.financial_statement?.payment_method === "monthly" ? 0 : 1 ,
+        interest:  data.invoice.financial_statement.interest ? Number(data.invoice.financial_statement.interest) : 0,
+        number_of_months:  data.invoice.financial_statement.number_of_months ? Number(data.invoice.financial_statement.number_of_months) : 0,
+        monthly_payment: data.invoice.financial_statement.monthly_payment ? Number(data.invoice.financial_statement.monthly_payment) : 0,
+      },
+    },
+    uuids: {
+      administration_files: data.uuids.administration_files,
+      sky_picture: data.uuids.sky_picture,
+      site_pictures: data.uuids.site_pictures,
+      videos: data.uuids.videos,
+    },
+  };
+
 
   const handleDownload = async () => {
     setloading(true)
-    const element = document.getElementById("pdf-content");
-
+    console.log(invoiceData);
+    const response = await addInvoice(invoiceData)
+   if(response.data.status === "success"){
+     const invoiceIdDiv = document.getElementById("invoiceId")
+     invoiceIdDiv.innerHTML = response.data.invoice_id
+     const element = document.getElementById("pdf-content");
     // Capture the content
     const canvas = await html2canvas(element, {
       logging: true , useCORS: true, allowTaint:true });
-    const imgData = canvas.toDataURL("image/png");
+      const imgData = canvas.toDataURL("image/png");
 
     // Generate PDF
     const pdf = new jsPDF("p", "mm", "a4");
@@ -50,26 +120,15 @@ function FinalReport() {
     }
 
     pdf.save("downloaded.pdf");
-    setloading(false)
-    // dispatch(clearForm());
-    // navigate("/step1");
-  };
+    setloading(false)}
+  }
+   
 
-  const handleClearForm = () => {
-    dispatch(clearForm());
-    navigate("/step1");
-  };
 
-  useEffect(()=>{
-   if(!invoice_id){
-    navigate('/step5')
-   }
-  },[invoice_id,navigate])
 
   return (
-    <div  className="w-11/12  space-y-2 ">
-      <h1 className="absolute top-5 right-5  sm:top-10 sm:right-16 text-xs  sm:text-xl text-start">Invoice id :<span className="font-bold ml-1">{invoice_id}</span></h1>
-
+    <div  className="  space-y-2 ">
+      <PrevPageButton route={`/step5`} />
       <h1 className="text-2xl text-start">Contact information</h1>
       <form className="w-full rounded-md border-2 px-5 space-y-2 bg-[#F8F8F8] border-[#65AC32]">
         <div className="grid sm:grid-cols-3 gap-3 my-5">
@@ -315,31 +374,32 @@ function FinalReport() {
             </div>
           </div>
 
-          <div className="space-y-5">
-            <div>
-              <img crossOrigin="true" src={site.sky_image} alt="" className=" h-[24vh]" />
-            </div>
-            <div>
-              <div className="flex justify-start items-start gap-1">
-                <img src={locationMarker} alt="icon" />
-                <InputLabel label="Latitude" />
+            <div className="space-y-5">
+                <div>
+                  <img crossOrigin="true" id="img" src={site?.sky_image} alt="Site Image" className="w-full " 
+                      />
+                </div>
+                <div className="flex justify-around gap-2">
+                <div className="text-center">
+                  <div className="flex justify-start items-start gap-1">
+                    <img src={locationMarker} alt="Location Marker" />
+                    <Label className="">Latitude</Label>
+                  </div>
+                  <div className="w-full text-[0.6rem] sm:text-xs rounded-md   break-words">
+                    {site.gps_tracker[0]}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="flex justify-start items-start gap-1">
+                    <img src={locationMarker} alt="Location Marker" />
+                    <Label className="">Longitude</Label>
+                  </div>
+                  <div className="w-full text-[0.6rem] sm:text-xs  rounded-md break-words">
+                    {site.gps_tracker[1]}
+                  </div>
+                </div>
+                </div>
               </div>
-              <div className="w-full text-xs  rounded-md">
-                {site.gps_tracker?.[0] ??
-                  "Latitude not available"}
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-start items-start gap-1">
-                <img src={locationMarker} alt="icon" />
-                <InputLabel label="Longitude" />
-              </div>
-              <div className="w-full text-xs  rounded-md">
-                {site.gps_tracker?.[1] ??
-                  "Longitude not available"}
-              </div>
-            </div>
-          </div>
         </div>
       </form>
       ))}
@@ -504,15 +564,6 @@ function FinalReport() {
       <div className="flex justify-end gap-5">
         <div className="flex justify-center my-5">
           <Button
-            onClick={() => handleClearForm()}
-            className="bg-[#65AC32]"
-            type="submit"
-          >
-            Clear form
-          </Button>
-        </div>
-        <div className="flex justify-center my-5">
-          <Button
             onClick={() => handleDownload()}
             className="bg-[#65AC32]"
             type="submit"
@@ -521,7 +572,7 @@ function FinalReport() {
           </Button>
         </div>
       </div>
-      <Report invoice_id={invoice_id}/>
+      <Report />
     </div>
   );
 }

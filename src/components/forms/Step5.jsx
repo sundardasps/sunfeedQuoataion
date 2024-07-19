@@ -47,6 +47,7 @@ function Step5() {
     touched,
     handleSubmit,
     setFieldValue,
+    resetForm,
   } = useFormik({
     initialValues: data.invoice.financial_statement,
     validationSchema: financialStatementSchema,
@@ -55,79 +56,8 @@ function Step5() {
 
       setLoading(true)
       dispatch(financial_statementUpdate(values));
-      const invoiceData = {
-        invoice: {
-          contact_information: {
-            company_name: data.invoice.contact_information.company_name,
-            customer_name: data.invoice.contact_information.customer_name,
-            address_headquarters: data.invoice.contact_information.address_headquarters,
-            city: data.invoice.contact_information.city,
-            postal_code: data.invoice.contact_information.postal_code,
-            country: data.invoice.contact_information.country,
-            company_vat_number: data.invoice.company_information.company_vat_number, // vat from another field
-            phone_number_office: data.invoice.contact_information.phone_number_office,
-            phone_number_mobile: data.invoice.contact_information.phone_number_mobile,
-            email: data.invoice.contact_information.email,
-          },
-          construction_site:
-            data.invoice.construction_site.filter((_,index)=>index!==0).map(site => ({
-            name: site.name,
-            address: site.address,
-            postal_code: site.postal_code,
-            country: site.country,
-            sitedirector_contact: site.sitedirector_contact,
-            sitedirector_email: site.sitedirector_email,
-            phone_office: site.phone_office,
-            phone_mobile: site.phone_mobile,
-            gps_tracker: site.gps_tracker, 
-          })),
-          product_information: {
-            inverters: data.invoice.product_information.inverters,
-            solar_panel: data.invoice.product_information.solar_panel,
-            fixation_type: data.invoice.product_information.fixation_type,
-            cable: data.invoice.product_information.cable,
-            cable_length: 0,
-            electrical_board: data.invoice.product_information.electrical_board,
-            option: data.invoice.product_information.inverters,
-            ground_opening_size: Number(data.invoice.product_information.ground_opening_size),
-            earthworks: 0,
-            driver_transformer: data.invoice.product_information.driver_transformer,
-            waterproof_coating: Number(data.invoice.product_information.waterproof_coating),
-            technical_studies: data.invoice.product_information.technical_studies,
-            construction_permit_fees:Number(data.invoice.product_information.construction_permit_fees),
-            engine_rental: Number(data.invoice.product_information.engine_rental),
-            dumpster: data.invoice.product_information.inverters,
-            complete_kit: 0,
-            complete_warehouse:"string",
-            carport: 0,
-            workforce: Number(data.invoice.product_information.workforce),
-          },
-          financial_statement: {
-            deposit: values.deposit ? Number(values.deposit) : 0,
-            total_payment:values.total_payment ? Number(values.total_payment) : 0,
-            down_payment: 0,
-            monthly_or_full: values.payment_method === "monthly" ? 0 : 1 ,
-            interest:  values.interest ? Number(values.interest) : 0,
-            number_of_months:  values.number_of_months ? Number(values.number_of_months) : 0,
-            monthly_payment: values.monthly_payment ? Number(values.monthly_payment) : 0,
-          },
-        },
-        uuids: {
-          administration_files: data.uuids.sky_picture,
-          sky_picture: data.uuids.sky_picture,
-          site_pictures: data.uuids.site_pictures,
-          videos: data.uuids.videos,
-        },
-      };
-      console.log(invoiceData);
-      const response = await addInvoice(invoiceData)
-      if(response.data.status === "success"){
-        navigate("/reportoverview",{state:{invoice_id:response.data.invoice_id}});
-      }else{
-        setLoading(false)
-        toast.error("Failed to add invoice. Please try again.");
-       }
-               
+      resetForm()
+      navigate("/reportoverview");        
       } catch (error) {
         console.log(error);
         setLoading(false)
@@ -195,7 +125,7 @@ function Step5() {
     >
       <FormTitle label="Financial Statement" />
       <FieldTitle label="Payment method" />
-      <div className="flex gap-4 justify-between items-end">
+      <div className="flex gap-4 justify-between items-start">
         <div className="w-2/3 ">
           <div className="flex items-center gap-2">
             <Checkbox
@@ -242,8 +172,8 @@ function Step5() {
       {values?.payment_method === "monthly" ? (
         <>
           {" "}
-          <div className="flex justify-evenly  gap-4  items-end ">
-            <div className=" transition-transform ">
+          <div className="flex justify-center sm:justify-evenly gap-2  items-end  ">
+            <div className=" transition-transform  ">
               <div className="flex justify-center items-center t  gap-1 ">
                 <InputLabel label="No. Of Months" />
               </div>

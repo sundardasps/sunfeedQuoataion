@@ -33,7 +33,6 @@ export async function getS3PresignedURL(size) {
 export async function uploadToPresignedUrl(
   presignedUrl,
   file,
-  setUploadProgress
 ) {
 
 
@@ -45,13 +44,6 @@ export async function uploadToPresignedUrl(
       'Content-Type': file.type 
     },
     data: file,
-    onUploadProgress: (progressEvent) => {
-      const percentCompleted = Math.round(
-        (progressEvent.loaded * 100) / progressEvent.total
-      );
-      setUploadProgress(percentCompleted);
-      console.log(`Upload Progress: ${percentCompleted}%`);
-    }
   };
 
   try {

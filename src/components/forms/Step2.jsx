@@ -1,7 +1,7 @@
 import InputLabel from "../common/InputLabel";
 import InputField from "../common/InputField";
 import FieldTitle from "../common/FieldTitle";
-import FileUploade from "../common/FileUpload";
+import FileUpload from "../common/FileUpload"; // Corrected from FileUploade
 import ErrorMssgField from "../common/ErrorMssgField";
 import FormTitle from "../common/FormTitle";
 import { Button } from "flowbite-react";
@@ -15,7 +15,9 @@ import { company_informationUpdate, uuidUpdate } from "../../redux/slice";
 import { company_informationSchema } from "../../yup/step2";
 import { allowedFileTypes } from "../../utils/constents";
 import { s3FileUploader } from "../../utils/addNewSite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
+import { useJsApiLoader } from "@react-google-maps/api";
 
 function Step2() {
   const navigate = useNavigate();
@@ -23,6 +25,36 @@ function Step2() {
   const [loading, setloading] = useState(false);
   const [file, setFile] = useState([]);
   const data = useSelector((state) => state.proposalDetails);
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries: ["places", "drawing"],
+  });
+  const initialValue = {
+    company_name: data?.invoice?.company_information?.company_name || "",
+    address_headquarters:
+      data?.invoice?.company_information?.address_headquarters || "",
+    city: data?.invoice?.company_information?.city || "",
+    postal_code: data?.invoice?.company_information?.postal_code || "",
+    country: data?.invoice?.company_information?.country || "",
+    company_vat_number:
+      data?.invoice?.company_information?.company_vat_number || "",
+    phone_number_office:
+      data?.invoice?.company_information?.phone_number_office || "",
+    phone_number_mobile:
+      data?.invoice?.company_information?.phone_number_mobile || "",
+    iban_number: data?.invoice?.company_information?.iban_number || "",
+    email: data?.invoice?.company_information?.email || "",
+    annual_number_report:
+      data?.invoice?.company_information?.annual_number_report || [],
+    recto_and_verse_link:
+      data?.invoice?.company_information?.recto_and_verse_link || [],
+    construction_permit:
+      data?.invoice?.company_information?.construction_permit || [],
+    electricity_bill:
+      data?.invoice?.company_information?.electricity_bill || [],
+  };
+
   const {
     errors,
     handleBlur,
@@ -31,91 +63,49 @@ function Step2() {
     touched,
     handleSubmit,
     setFieldValue,
-    resetForm
+    resetForm,
   } = useFormik({
-    initialValues: {
-      company_name: data.invoice.company_information.company_name
-        ? data.invoice.company_information.company_name
-        : "",
-      address_headquarters: data.invoice.company_information
-        .address_headquarters
-        ? data.invoice.company_information.address_headquarters
-        : "",
-      city: data.invoice.company_information.city
-        ? data.invoice.company_information.city
-        : "",
-      postal_code: data.invoice.company_information.postal_code
-        ? data.invoice.company_information.postal_code
-        : "",
-      country: data.invoice.company_information.country
-        ? data.invoice.company_information.country
-        : "",
-      company_vat_number: data.invoice.company_information.company_vat_number
-        ? data.invoice.company_information.company_vat_number
-        : "",
-      phone_number_office: data.invoice.company_information.phone_number_office
-        ? data.invoice.company_information.phone_number_office
-        : "",
-      phone_number_mobile: data.invoice.company_information.phone_number_mobile
-        ? data.invoice.company_information.phone_number_mobile
-        : "",
-      iban_number: data.invoice.company_information.iban_number
-        ? data.invoice.company_information.iban_number
-        : "",
-      email: data.invoice.company_information.email
-        ? data.invoice.company_information.email
-        : "",
-      annual_number_report: data.invoice.company_information
-        .annual_number_report
-        ? data.invoice.company_information.annual_number_report
-        : [],
-      recto_and_verse_link: data.invoice.company_information
-        .recto_and_verse_link
-        ? data.invoice.company_information.recto_and_verse_link
-        : [],
-      construction_permit: data.invoice.company_information.construction_permit
-        ? data.invoice.company_information.construction_permit
-        : [],
-      electricity_bill: data.invoice.company_information.electricity_bill
-        ? data.invoice.company_information.electricity_bill
-        : [],
-    },
+    initialValues: initialValue,
     validationSchema: company_informationSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (value, { resetForm }) => {
       try {
         setloading(true);
-
         const administration_files = [
-          ...values.recto_and_verse_link,
-          ...values.construction_permit,
-          ...values.electricity_bill,
-          ...values.annual_number_report,
+          ...value.recto_and_verse_link,
+          ...value.construction_permit,
+          ...value.electricity_bill,
+          ...value.annual_number_report,
         ];
-        const nonEmptyFiles = administration_files.filter((values)=> values.name && values  )
 
+        const nonEmptyFiles = administration_files.filter(
+          (file) => file.name && file
+        );
+       
         const response = await s3FileUploader(
           nonEmptyFiles.length,
-          nonEmptyFiles,
-          
+          nonEmptyFiles
         );
 
-        const uuids = {
-          administration_files: response,
-        };
-        dispatch(uuidUpdate(uuids));
+        if (response.length > 0) {
+          const uuids = {
+            administration_files: response,
+          };
+          dispatch(uuidUpdate(uuids));
+        }
 
-        dispatch(company_informationUpdate(values));
-        resetForm()
+        dispatch(company_informationUpdate(value));
         navigate("/step3");
       } catch (error) {
         console.log(error);
+      } finally {
+        setloading(false);
       }
     },
+    enableReinitialize: true,
   });
 
   return (
-    <form 
-      
+    <form
       onSubmit={handleSubmit}
       className="flex max-w-md flex-col gap-4 w-full rounded-md border-2 p-5 space-y-2 bg-[#F8F8F8] border-[#65AC32]"
     >
@@ -273,11 +263,12 @@ function Step2() {
       <div>
         <div className="mb-2 block">
           <FieldTitle
-            label={"Annual Numbers Report"}
-            htmlFor={"Annual Numbers Report"}
+            label="Annual Numbers Report"
+            htmlFor="Annual Numbers Report"
           />
         </div>
         <ChooseFile
+          key="annual_number_report"
           name="annual_number_report"
           setFieldValue={setFieldValue}
           fileType={allowedFileTypes}
@@ -291,11 +282,12 @@ function Step2() {
       <div>
         <div className="mb-2 block">
           <FieldTitle
-            label={"ID Recto and Verso 2 Link"}
-            htmlFor={"ID Recto and Verso 2 Link"}
+            label="ID Recto and Verso 2 Link"
+            htmlFor="ID Recto and Verso 2 Link"
           />
         </div>
         <ChooseFile
+          key="recto_and_verse_link"
           name="recto_and_verse_link"
           setFieldValue={setFieldValue}
           fileType={allowedFileTypes}
@@ -309,11 +301,12 @@ function Step2() {
       <div>
         <div className="mb-2 block">
           <FieldTitle
-            label={"Construction Permit"}
-            htmlFor={"Construction Permit"}
+            label="Construction Permit"
+            htmlFor="Construction Permit"
           />
         </div>
         <ChooseFile
+          key="construction_permit"
           name="construction_permit"
           setFieldValue={setFieldValue}
           fileType={allowedFileTypes}
@@ -327,17 +320,18 @@ function Step2() {
       <div>
         <div className="mb-2 block">
           <FieldTitle
-            label={"Electricity Bill (last 12 months)"}
-            htmlFor={"Electricity Bill (last 12 months)"}
+            label="Electricity Bill (last 12 months)"
+            htmlFor="Electricity Bill (last 12 months)"
           />
         </div>
-        <FileUploade
+        <FileUpload
+          key="electricity_bill"
           field="electricity_bill"
           allowedFileTypes={allowedFileTypes}
           setFile={setFile}
           setFieldValue={setFieldValue}
           storedFile={file}
-          alertType={"Document/img"}
+          alertType="Document/img"
           disabled={loading}
         />
         {errors.electricity_bill && touched.electricity_bill && (
@@ -345,7 +339,14 @@ function Step2() {
         )}
       </div>
       <Button disabled={loading} className="bg-[#65AC32]" type="submit">
-       {loading ? "Uploading..." :<>Next<ArrowRight /></>}
+        {loading ? (
+          "Uploading..."
+        ) : (
+          <>
+            Next
+            <ArrowRight />
+          </>
+        )}
       </Button>
     </form>
   );
